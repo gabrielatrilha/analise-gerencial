@@ -71,10 +71,35 @@ th{font-weight:600;opacity:.7;font-size:11px;text-transform:uppercase;border-bot
 .bm:hover{background:rgba(255,255,255,.15)}
 @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.cr{grid-template-columns:1fr}.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+
+#loginOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a1628;z-index:9999;display:flex;align-items:center;justify-content:center}
+#loginOverlay.hidden{display:none}
+.login-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:40px;text-align:center;max-width:380px;width:90%}
+.login-box h2{font-size:20px;font-weight:700;margin-bottom:6px;letter-spacing:1px}
+.login-box p{font-size:13px;opacity:.6;margin-bottom:24px}
+.login-box input{width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:14px;outline:none;margin-bottom:12px}
+.login-box input:focus{border-color:#2563eb}
+.login-box button{width:100%;padding:12px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.login-box button:hover{background:#1d4ed8}
+.login-err{color:#ef4444;font-size:12px;margin-bottom:10px;min-height:18px}
 </style>
 </head>
 <body>
-<div class="d" id="app"></div>
+<div id="loginOverlay">
+<div class="login-box">
+<h2>MAGNUM IMPORT</h2>
+<p>Dashboard Gerencial</p>
+<input type="password" id="loginPwd" placeholder="Senha de acesso" autocomplete="off">
+<div class="login-err" id="loginErr"></div>
+<button onclick="checkLogin()">Entrar</button>
+</div>
+</div>
+<div class="d" id="app" style="display:none"></div>
+<script>
+function checkLogin(){var pwd=document.getElementById('loginPwd').value;if(pwd==='magnum@gerencial'){document.getElementById('loginOverlay').classList.add('hidden');document.getElementById('app').style.display='';sessionStorage.setItem('mg_auth','1');render()}else{document.getElementById('loginErr').textContent='Senha incorreta';document.getElementById('loginPwd').value='';document.getElementById('loginPwd').focus()}}
+document.getElementById('loginPwd').addEventListener('keydown',function(e){if(e.key==='Enter')checkLogin()});
+if(sessionStorage.getItem('mg_auth')==='1'){document.getElementById('loginOverlay').classList.add('hidden');document.getElementById('app').style.display=''}
+</script>
 <script>
 var U={C61:'RS',C63:'SP',C64:'PR',C65:'HOLEP',C66:'TRAUMATO',C67:'SC',C68:'BA'};
 var MN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul'];
@@ -303,8 +328,11 @@ function render(){
       var det=ddLookup[d.n]||[];
       det.forEach(function(dd){
         var isNOpen=xDN===dd.n;
-        h+='<tr style="cursor:pointer;background:rgba(255,255,255,.03)" onclick="event.stopPropagation();toggleDN(\''+dd.n.replace(/'/g,"\\'")+'\')">';
-        h+='<td style="padding-left:24px;font-size:12px">'+(dd.o?(isNOpen?'▼ ':'▶ '):' &nbsp; ')+dd.n+'</td><td class="r" style="font-size:12px">'+fF(dd.v)+'</td><td class="r"></td></tr>';
+        if(dd.o){
+        h+='<tr style="cursor:pointer;background:rgba(255,255,255,.03)" onclick="event.stopPropagation();toggleDN(\''+dd.n.replace(/'/g,"\\\'")+'\')"><td style="padding-left:24px;font-size:12px">'+(isNOpen?'\u25bc ':'\u25b6 ')+dd.n+'</td><td class="r" style="font-size:12px">'+fF(dd.v)+'</td><td class="r"></td></tr>';
+        }else{
+        h+='<tr style="background:rgba(255,255,255,.03)"><td style="padding-left:36px;font-size:12px">'+dd.n+'</td><td class="r" style="font-size:12px">'+fF(dd.v)+'</td><td class="r"></td></tr>';
+        }
         if(isNOpen&&dd.o){
           h+='<tr style="background:rgba(255,255,255,.02)"><td colspan="3" style="padding-left:40px;font-size:11px;opacity:.7;white-space:pre-wrap">'+dd.o+'</td></tr>';
         }
@@ -366,7 +394,7 @@ window.toggleDN=function(nome){xDN=xDN===nome?null:nome;render()};
   window.toggleSU=function(u){sSU=sSU===u?null:u;render()};
   window.toggleVO=function(k){vO[k]=!vO[k];render()};
 
-  render();
+  if(sessionStorage.getItem('mg_auth')==='1')render();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </script>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </body>body>
 </html>html>
