@@ -233,7 +233,23 @@ function render(){
   h+='<div class="kp k6"><div class="lb">Margem</div><div class="vl">'+fmt(margem)+'</div><div class="sb">(Fat - Desp - CMV)</div></div>';
   h+='</div>';
 
-  // CHARTS
+  // CICLO FINANCEIRO
+var cicloAcum={cn:24,np:45,cp:69};
+var cicloV=sM===0?cicloAcum:(CICLO[sM]||cicloAcum);
+h+='<div class="sec"><div class="st">Ciclo Financeiro — Média de Dias</div>';
+h+='<div class="g3" style="margin-bottom:12px">';
+h+='<div class="cd" style="border-color:rgba(59,130,246,.3);cursor:default"><div class="cn">Cirurgia → NF</div><div class="cv" style="color:#3b82f6">'+cicloV.cn+' <span style="font-size:12px;opacity:.6">dias</span></div></div>';
+h+='<div class="cd" style="border-color:rgba(245,158,11,.3);cursor:default"><div class="cn">NF → Recebimento</div><div class="cv" style="color:#f59e0b">'+cicloV.np+' <span style="font-size:12px;opacity:.6">dias</span></div></div>';
+h+='<div class="cd" style="border-color:rgba(34,197,94,.3);cursor:default"><div class="cn">Ciclo Total</div><div class="cv" style="color:#22c55e">'+cicloV.cp+' <span style="font-size:12px;opacity:.6">dias</span></div></div>';
+h+='</div>';
+if(sM===0){
+h+='<table><tr><th>Mês Pgto</th><th class="r">Cirurgia→NF</th><th class="r">NF→Receb.</th><th class="r">Ciclo Total</th><th class="r">Registros</th></tr>';
+for(var ci=1;ci<=7;ci++){var cc=CICLO[ci];if(cc)h+='<tr><td>'+MN[ci-1]+'</td><td class="r">'+cc.cn+' dias</td><td class="r">'+cc.np+' dias</td><td class="r">'+cc.cp+' dias</td><td class="r">'+fN(cc.n)+'</td></tr>';}
+h+='</table>';
+}
+h+='</div>';
+
+    // CHARTS
   h+='<div class="cr">';
   h+='<div class="cb"><h3>Evolução Faturamento — 2024 × 2025 × 2026</h3>';
   var f26=[];for(var i=0;i<12;i++)f26.push(i<7?(FM[i+1]||0):null);
@@ -381,22 +397,7 @@ function render(){
   h+='</div>';
   h+='</div>';
 
-  // CICLO FINANCEIRO
-var cicloAcum={cn:24,np:45,cp:69};
-var cicloV=sM===0?cicloAcum:(CICLO[sM]||cicloAcum);
-h+='<div class="sec"><div class="st">Ciclo Financeiro — Média de Dias</div>';
-h+='<div class="g3" style="margin-bottom:12px">';
-h+='<div class="cd" style="border-color:rgba(59,130,246,.3);cursor:default"><div class="cn">Cirurgia → NF</div><div class="cv" style="color:#3b82f6">'+cicloV.cn+' <span style="font-size:12px;opacity:.6">dias</span></div></div>';
-h+='<div class="cd" style="border-color:rgba(245,158,11,.3);cursor:default"><div class="cn">NF → Recebimento</div><div class="cv" style="color:#f59e0b">'+cicloV.np+' <span style="font-size:12px;opacity:.6">dias</span></div></div>';
-h+='<div class="cd" style="border-color:rgba(34,197,94,.3);cursor:default"><div class="cn">Ciclo Total</div><div class="cv" style="color:#22c55e">'+cicloV.cp+' <span style="font-size:12px;opacity:.6">dias</span></div></div>';
-h+='</div>';
-if(sM===0){
-h+='<table><tr><th>Mês Pgto</th><th class="r">Cirurgia→NF</th><th class="r">NF→Receb.</th><th class="r">Ciclo Total</th><th class="r">Registros</th></tr>';
-for(var ci=1;ci<=7;ci++){var cc=CICLO[ci];if(cc)h+='<tr><td>'+MN[ci-1]+'</td><td class="r">'+cc.cn+' dias</td><td class="r">'+cc.np+' dias</td><td class="r">'+cc.cp+' dias</td><td class="r">'+fN(cc.n)+'</td></tr>';}
-h+='</table>';
-}
-h+='</div>';
-document.getElementById('app').innerHTML=h;
+  document.getElementById('app').innerHTML=h;
 }
 
 window.setSM=function(v){sM=v;render()};
