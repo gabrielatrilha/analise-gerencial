@@ -82,6 +82,11 @@ th{font-weight:600;opacity:.7;font-size:11px;text-transform:uppercase;border-bot
 .login-box button{width:100%;padding:12px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
 .login-box button:hover{background:#1d4ed8}
 .login-err{color:#ef4444;font-size:12px;margin-bottom:10px;min-height:18px}
+
+details summary.st{cursor:pointer;user-select:none}
+details summary.st::marker{content:''}
+details summary.st::before{content:'\25B6 ';font-size:10px;margin-right:6px;display:inline-block;transition:transform .2s}
+details[open] summary.st::before{transform:rotate(90deg)}
 </style>
 </head>
 <body>
@@ -236,7 +241,7 @@ function render(){
   // CICLO FINANCEIRO
 var cicloAcum={cn:24,np:45,cp:69};
 var cicloV=sM===0?cicloAcum:(CICLO[sM]||cicloAcum);
-h+='<div class="sec"><div class="st">Ciclo Financeiro — Média de Dias</div>';
+h+='<div class="sec"><details><summary class="st" style="cursor:pointer">Ciclo Financeiro — Média de Dias</summary>';
 h+='<div class="g3" style="margin-bottom:12px">';
 h+='<div class="cd" style="border-color:rgba(59,130,246,.3);cursor:default"><div class="cn">Cirurgia → NF</div><div class="cv" style="color:#3b82f6">'+cicloV.cn+' <span style="font-size:12px;opacity:.6">dias</span></div></div>';
 h+='<div class="cd" style="border-color:rgba(245,158,11,.3);cursor:default"><div class="cn">NF → Recebimento</div><div class="cv" style="color:#f59e0b">'+cicloV.np+' <span style="font-size:12px;opacity:.6">dias</span></div></div>';
@@ -247,7 +252,7 @@ h+='<table><tr><th>Mês Pgto</th><th class="r">Cirurgia→NF</th><th class="r">N
 for(var ci=1;ci<=7;ci++){var cc=CICLO[ci];if(cc)h+='<tr><td>'+MN[ci-1]+'</td><td class="r">'+cc.cn+' dias</td><td class="r">'+cc.np+' dias</td><td class="r">'+cc.cp+' dias</td><td class="r">'+fN(cc.n)+'</td></tr>';}
 h+='</table>';
 }
-h+='</div>';
+h+='</details></div>';
 
     // CHARTS
   h+='<div class="cr">';
