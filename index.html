@@ -174,7 +174,7 @@ function makeBar(values,colors,max,labels){
     for(var j=0;j<values.length;j++){
       var v=values[j][i]||0;
       var pct=max>0?Math.max(v/max*150,1):1;
-      var showLabel=true));
+      var showLabel=true;
       h+='<div class="bar" style="height:'+pct+'px;width:'+(values.length>1?Math.floor(40/values.length):30)+'px;background:'+colors[j]+'">';
       if(v>0&&showLabel)h+='<div class="bt">'+fmt(v)+'</div>';
       h+='</div>';
