@@ -379,7 +379,7 @@ h+='</details></div>';
   h+='</div>';
   h+='</div>';
 
-  window.scrollTo(0,0);document.getElementById('app').innerHTML=h;setTimeout(function(){window.scrollTo(0,_sp)},0);
+  var _el=document.getElementById('app');_el.style.display='none';_el.innerHTML=h;requestAnimationFrame(function(){_el.style.display='';window.scrollTo(0,_sp)});
 
 }
 
