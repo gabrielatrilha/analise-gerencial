@@ -379,7 +379,7 @@ h+='</details></div>';
   h+='</div>';
   h+='</div>';
 
-  var _el=document.getElementById('app');var _nt=document.createElement('style');_nt.textContent='*{transition:none!important;animation:none!important}';document.head.appendChild(_nt);_el.style.display='none';_el.innerHTML=h;window.scrollTo(0,0);_el.style.display='';void _el.offsetHeight;window.scrollTo(0,_sp);void _el.offsetHeight;requestAnimationFrame(function(){requestAnimationFrame(function(){document.head.removeChild(_nt)})});
+  var _el=document.getElementById('app');var _nt=document.createElement('style');_nt.textContent='*{transition:none!important;animation:none!important}';document.head.appendChild(_nt);_el.style.display='none';_el.innerHTML=h;window.scrollTo(0,0);_el.style.display='';requestAnimationFrame(function(){window.scrollTo(0,_sp);requestAnimationFrame(function(){document.head.removeChild(_nt)})});
 
 }
 
