@@ -379,7 +379,7 @@ h+='</details></div>';
   h+='</div>';
   h+='</div>';
 
-  document.getElementById('app').innerHTML=h;  window.scrollTo(0,_sp);
+  window.scrollTo(0,0);document.getElementById('app').innerHTML=h;setTimeout(function(){window.scrollTo(0,_sp)},0);
 
 }
 
