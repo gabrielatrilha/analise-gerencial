@@ -82,8 +82,8 @@ details[open] summary.st::before{transform:rotate(90deg)}
 <div class="d" id="app"></div>
 <script>
 
-var U=["C61","C63","C64","C65","C66","C67","C68"];
-var MN={C61:"RS",C63:"SP",C64:"PR",C65:"HOLEP",C66:"TRAUMATO",C67:"SC",C68:"BA"};
+var U={C61:"RS",C63:"SP",C64:"PR",C65:"HOLEP",C66:"TRAUMATO",C67:"SC",C68:"BA"};
+var MN=["Jan","Fev","Mar","Abr","Mai","Jun","Jul"];
 function fmt(v){if(Math.abs(v)>=1e6)return'R$ '+(v/1e6).toFixed(1).replace('.',',')+'M';if(Math.abs(v)>=1e3)return'R$ '+(v/1e3).toFixed(0)+'K';return'R$ '+v.toFixed(0)}
 function fmtK(v){return'R$ '+Math.round(v).toLocaleString('pt-BR')}
 function fN(v){return v.toLocaleString('pt-BR')}
