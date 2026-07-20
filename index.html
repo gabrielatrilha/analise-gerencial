@@ -344,7 +344,7 @@ h+='</details></div>';
 
   // SALDO
   h+='<div class="sec"><div class="st">Saldo Bancário</div>';
-  var sU=['C65','C61','C66','C67','C63','C68'];
+  var sU=['C65','C61','C66','C67','C63','C68','C64'];
   var tCC=0,tI=0;sU.forEach(function(u){tCC+=(SB[u].cc||0);tI+=(SB[u].inv||0)});
   h+='<div style="margin-bottom:12px;font-size:13px">CC: <b>'+fF(tCC)+'</b> &nbsp;|&nbsp; Investimentos: <b>'+fF(tI)+'</b> &nbsp;|&nbsp; Total: <b>'+fF(tCC+tI)+'</b></div>';
   function sbCard(u){
