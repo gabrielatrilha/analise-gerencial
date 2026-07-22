@@ -259,7 +259,7 @@ h+='</details></div>';
     h+='<table><tr><th>Unidade</th><th class="r">Faturamento</th><th class="r">%</th></tr>';
     ['C61','C66','C65','C63','C64','C67','C68'].forEach(function(u){
       var v=sM===0?(FU[u]||0):guv(FUM,u,sM);if(!v)return;
-      h+='<tr><td>'+U[u]+' ('+u+')</td><td class="r">'+fF(v)+'</td><td class="r">'+(fv>0?(v/fv*100).toFixed(1):'0')+'%</td></tr>';
+      h+='<tr><td>'+(U[u]||u)+' ('+u+')</td><td class="r">'+fF(v)+'</td><td class="r">'+(fv>0?(v/fv*100).toFixed(1):'0')+'%</td></tr>';
     });
     h+='</table>';
   }
@@ -276,9 +276,9 @@ h+='</details></div>';
   h+='<div class="sec"><div class="st">Cirurgias — '+fN(cv)+' '+ml+'</div>';
   var cU=['C61','C66','C65','C63','C67','C64','C68'];
   h+='<div class="g4" style="margin-bottom:8px">';
-  cU.slice(0,4).forEach(function(u){var v=sM===0?(CU[u]||0):guv(CUM,u,sM);h+='<div class="cd'+(sCU===u?' a':'')+'" onclick="toggleCU(\''+u+'\')"><div class="cn">'+U[u]+'</div><div class="cv">'+fN(v)+'</div><div class="cs">cirurgias</div></div>'});
+  cU.slice(0,4).forEach(function(u){var v=sM===0?(CU[u]||0):guv(CUM,u,sM);h+='<div class="cd'+(sCU===u?' a':'')+'" onclick="toggleCU(\''+u+'\')"><div class="cn">'+(U[u]||u)+'</div><div class="cv">'+fN(v)+'</div><div class="cs">cirurgias</div></div>'});
   h+='</div><div class="g3">';
-  cU.slice(4).forEach(function(u){var v=sM===0?(CU[u]||0):guv(CUM,u,sM);h+='<div class="cd'+(sCU===u?' a':'')+'" onclick="toggleCU(\''+u+'\')"><div class="cn">'+U[u]+'</div><div class="cv">'+fN(v)+'</div><div class="cs">cirurgias</div></div>'});
+  cU.slice(4).forEach(function(u){var v=sM===0?(CU[u]||0):guv(CUM,u,sM);h+='<div class="cd'+(sCU===u?' a':'')+'" onclick="toggleCU(\''+u+'\')"><div class="cn">'+(U[u]||u)+'</div><div class="cv">'+fN(v)+'</div><div class="cs">cirurgias</div></div>'});
   h+='</div>';
   if(sCU){
     h+='<div class="det"><div class="stb">';
@@ -307,7 +307,7 @@ h+='</details></div>';
   h+='<div class="sec"><div class="st">Despesas por Subsetor</div>';
   h+='<div style="margin-bottom:10px">';
   h+='<span class="ch'+(sDU==='ALL'?' a':'')+'" onclick="setDU(\'ALL\')">Todas</span>';
-  ['C61','C66','C65','C63','C64','C67','C68'].forEach(function(u){h+='<span class="ch'+(sDU===u?' a':'')+'" onclick="setDU(\''+u+'\')">'+U[u]+'</span>'});
+  ['C61','C66','C65','C63','C64','C67','C68'].forEach(function(u){h+='<span class="ch'+(sDU===u?' a':'')+'" onclick="setDU(\''+u+'\')">'+(U[u]||u)+'</span>'});
   h+='</div>';
   var dtot=sDU==='ALL'?gv(DM,sM):(sM===0?(DU[sDU]||0):guv(DUM,sDU,sM));
   h+='<div style="font-size:13px;margin-bottom:8px;opacity:.7">Total: '+fF(dtot)+'</div>';
@@ -351,7 +351,7 @@ h+='</details></div>';
   function sbCard(u){
     var s=SB[u],open=sSU===u,tot=s.cc+(s.inv||0);
     var c='<div class="cd'+(open?' a':'')+'" onclick="toggleSU(\''+u+'\')" style="'+(open?'padding-bottom:14px':'')+'">';
-    c+='<div class="cn">'+U[u]+'</div>';
+    c+='<div class="cn">'+(U[u]||u)+'</div>';
     c+='<div class="cv">'+fmt(tot)+'</div>';
     c+='<div class="cs">Total em '+s.dt+'</div>';
     if(open){
