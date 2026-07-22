@@ -297,9 +297,9 @@ h+='</details></div>';
   var iA=[];for(var k in IU)iA.push([k,IU[k]]);iA.sort(function(a,b){return b[1]-a[1]});
   var half=Math.ceil(iA.length/2);
   h+='<div class="g3" style="margin-bottom:8px">';
-  iA.slice(0,half).forEach(function(e){h+='<div class="cd'+(sIU===e[0]?' a':'')+'" onclick="toggleIU(\''+e[0]+'\')"><div class="cn">'+U[e[0]]+'</div><div class="cv">'+fmt(e[1])+'</div><div class="cs">inadimplente</div></div>'});
+  iA.slice(0,half).forEach(function(e){h+='<div class="cd'+(sIU===e[0]?' a':'')+'" onclick="toggleIU(\''+e[0]+'\')"><div class="cn">'+(U[e[0]]||e[0])+'</div><div class="cv">'+fmt(e[1])+'</div><div class="cs">inadimplente</div></div>'});
   h+='</div>';
-  if(iA.length>half){h+='<div class="g3">';iA.slice(half).forEach(function(e){h+='<div class="cd'+(sIU===e[0]?' a':'')+'" onclick="toggleIU(\''+e[0]+'\')"><div class="cn">'+U[e[0]]+'</div><div class="cv">'+fmt(e[1])+'</div><div class="cs">inadimplente</div></div>'});h+='</div>'}
+  if(iA.length>half){h+='<div class="g3">';iA.slice(half).forEach(function(e){h+='<div class="cd'+(sIU===e[0]?' a':'')+'" onclick="toggleIU(\''+e[0]+'\')"><div class="cn">'+(U[e[0]]||e[0])+'</div><div class="cv">'+fmt(e[1])+'</div><div class="cs">inadimplente</div></div>'});h+='</div>'}
   if(sIU&&ID[sIU]){h+='<div class="det"><table><tr><th>Devedor</th><th class="r">Valor</th></tr>';ID[sIU].forEach(function(d){h+='<tr><td>'+d.n+'</td><td class="r">'+fF(d.v)+'</td></tr>'});h+='</table></div>'}
   h+='</div>';
 
