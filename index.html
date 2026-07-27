@@ -248,7 +248,7 @@ h+='</details></div>';
   var fd=[],dd=[],rd=[];
   for(var i=0;i<7;i++){fd.push(FM[i+1]||0);dd.push(DM[i+1]||0);rd.push(RM[i+1]||0)}
   var mx=0;for(var i=0;i<7;i++)mx=Math.max(mx,fd[i],dd[i],rd[i]);
-  h+=makeBar([fd,dd,rd],['#3b82f6','#ef4444','#22c55e'],mx,MN);
+  h+=makeBar([fd,dd,rd],['#3b82f6','#ef4444','#22c55e'],mx,(function(){var a=[];for(var i=1;i<=7;i++)a.push(MN[i]);return a})());
   h+='<div class="legend" style="margin-top:8px"><span><span class="lc" style="background:#3b82f6"></span>Fat</span><span><span class="lc" style="background:#ef4444"></span>Desp</span><span><span class="lc" style="background:#22c55e"></span>Rec</span></div>';
   h+='</div></div>';
 
