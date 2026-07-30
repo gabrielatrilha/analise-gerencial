@@ -83,7 +83,8 @@ details[open] summary.st::before{transform:rotate(90deg)}
 <script>
 
 var U={C61:"RS",C63:"SP",C64:"PR",C65:"HOLEP",C66:"TRAUMATO",C67:"SC",C68:"BA",CXP:"XP"};
-var MN={"1":"Jan","2":"Fev","3":"Mar","4":"Abr","5":"Mai","6":"Jun","7":"Jul","8":"Ago","9":"Set","10":"Out","11":"Nov","12":"Dez"};return'R$ '+v.toFixed(0)}
+var MN={"1":"Jan","2":"Fev","3":"Mar","4":"Abr","5":"Mai","6":"Jun","7":"Jul","8":"Ago","9":"Set","10":"Out","11":"Nov","12":"Dez"};
+function fmt(v){if(Math.abs(v)>=1e6)return'R$ '+(v/1e6).toFixed(1).replace('.',',')+'M';if(Math.abs(v)>=1e3)return'R$ '+(v/1e3).toFixed(0)+'K';return'R$ '+v.toFixed(0)}
 function fmtK(v){return'R$ '+Math.round(v).toLocaleString('pt-BR')}
 function fN(v){return v==null?0:v.toLocaleString('pt-BR')}
 function fF(v){return'R$ '+(v==null?0:v).toLocaleString('pt-BR',{minimumFractionDigits:0})}
@@ -116,8 +117,10 @@ var CMD={RS:{"LUCAS MEDEIROS BURTTET":51,"LUCIANO ERY BRAZ DE OLIVEIRA":41,"GUST
 
 var IU={TRAUMATO:704421.16,RS:44870.5,SP:101691,PR:111600,HOLEP:35000,SC:10000};
 var IT=1007582.66;
+var ID={C61:[{n:"UNIMED VTRP",v:88270},{n:"UNIMED POA",v:16026},{n:"UNIMED GRAMADO",v:8000},{n:"SANTA CASA - POA",v:4450},{n:"UNIMED TORRE II",v:4315},{n:"HOSPITAL UNIMED PASL",v:1500}],C63:[{n:"HOSPITAL E MATERNIDADE BRASIL",v:93900},{n:"BP PAULISTA",v:59755},{n:"HOSPITAL ISRAELITA ALBERTEINSTEIN",v:12400},{n:"ACACIRA ARAÚJO GRILO",v:10000},{n:"BP MIRANTE",v:6300},{n:"HOSPITAL MORIAH",v:3000},{n:"HOSPITAL DO CORACAO",v:1568}],C65:[{n:"SANTA CASA - POA",v:20000},{n:"UNIMED TORRE II",v:7000}],C66:[{n:"SOCIEDADE SULINA DIVINA PROVIDENCIA- HOSPITAL DIVINA",v:646101},{n:"BLANC POA",v:35000},{n:"POSTAL SAUDE",v:27400},{n:"SUL AMÉRICA COMPANHIA DE SEGURO SAÚDE",v:15200}],C67:[{n:"SELECT",v:10000},{n:"UNIMED LITORAL COOPERATIVA DE TRABALHO MEDICO LTDA",v:9800},{n:"PROVIDA",v:2500},{n:"SOS CARDIO",v:980}]};
 
 var SB={SP:{cc:316328.54,inv:0,d:"28/07"},SC:{cc:31706.17,inv:326779,d:"28/07"},HOLEP:{cc:87554.61,inv:1387266,d:"28/07"},BA:{cc:30815.44,inv:0,d:"23/07"},RS:{cc:534508.04,inv:62319,d:"28/07"},TRAUMATO:{cc:477884.97,inv:1350172,d:"28/07"},PR:{cc:0,inv:250030,d:"28/07"}};
+var COLOPLAST=139627;
 var INV={HOLEP:1387266,TRAUMATO:1350172,SC:326779,PR:250030,RS:62319};
 
 var CMVM={"1":5494700.34,"2":4501133.27,"3":4668839.59,"4":5530520.53,"5":5200364.1,"6":5812759.16,"7":6320559.17,"8":4365614.72,"9":4166675.54,"10":6160854.66,"11":4548142.85,"12":5115022.01};
