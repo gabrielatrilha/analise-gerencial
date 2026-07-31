@@ -8,32 +8,47 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0a1628;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
-.wrap{max-width:900px;margin:0 auto;padding:20px}
+.wrap{max-width:700px;margin:0 auto;padding:24px}
 h1{font-size:22px;font-weight:700;margin-bottom:4px;letter-spacing:1px}
 .sub{opacity:.7;font-size:13px;margin-bottom:24px}
 .card{background:rgba(255,255,255,.06);border-radius:12px;padding:20px;margin-bottom:16px}
 .card h2{font-size:16px;margin-bottom:12px;color:#4db8ff}
-label.file-lbl{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px dashed rgba(255,255,255,.2);border-radius:8px;cursor:pointer;margin-bottom:8px;transition:.2s}
-label.file-lbl:hover{border-color:#4db8ff;background:rgba(75,184,255,.05)}
-label.file-lbl .icon{font-size:20px;min-width:28px;text-align:center}
-label.file-lbl .name{flex:1;font-size:13px}
-label.file-lbl .status{font-size:12px;opacity:.6}
-label.file-lbl.loaded{border-color:#2ecc71;background:rgba(46,204,113,.08)}
-label.file-lbl.loaded .status{color:#2ecc71;opacity:1}
+/* Drop zone */
+.dropzone{border:2px dashed rgba(255,255,255,.2);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;transition:.25s}
+.dropzone:hover,.dropzone.over{border-color:#4db8ff;background:rgba(75,184,255,.06)}
+.dropzone .dz-icon{font-size:40px;margin-bottom:10px}
+.dropzone .dz-label{font-size:16px;font-weight:600}
+.dropzone .dz-hint{font-size:12px;opacity:.5;margin-top:6px}
 input[type=file]{display:none}
+/* File list */
+.flist{margin-top:16px}
+.fitem{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;margin-bottom:4px;font-size:13px;background:rgba(255,255,255,.04)}
+.fitem.ok{background:rgba(46,204,113,.1)}
+.fitem.warn{background:rgba(243,156,18,.1)}
+.fitem .fi-icon{font-size:16px;min-width:22px;text-align:center}
+.fitem .fi-cat{flex:1;font-weight:500}
+.fitem .fi-name{flex:2;opacity:.7;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fitem .fi-status{font-size:11px;font-weight:600;min-width:16px;text-align:center}
+.fitem .fi-status.check{color:#2ecc71}
+.fitem .fi-status.miss{color:rgba(255,255,255,.3)}
+.fitem .fi-remove{cursor:pointer;opacity:.4;font-size:14px;padding:0 4px}
+.fitem .fi-remove:hover{opacity:1;color:#e74c3c}
+/* Token */
 .token-row{display:flex;gap:8px;align-items:center}
 .token-row input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 12px;color:#fff;font-size:13px}
 .token-row input::placeholder{opacity:.4}
 .token-row button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px}
 .token-row button:hover{background:rgba(255,255,255,.2)}
+/* Buttons */
 .btn{display:block;width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;transition:.2s}
 .btn-process{background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff}
 .btn-process:hover{opacity:.9}
 .btn-process:disabled{opacity:.4;cursor:not-allowed}
+/* Log */
 #log{background:rgba(0,0,0,.3);border-radius:8px;padding:12px;font-family:monospace;font-size:12px;max-height:300px;overflow-y:auto;white-space:pre-wrap;line-height:1.6;display:none}
 #log.show{display:block}
 .kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
-.kpi{flex:1;min-width:120px;background:rgba(255,255,255,.06);border-radius:8px;padding:10px;text-align:center}
+.kpi{flex:1;min-width:100px;background:rgba(255,255,255,.06);border-radius:8px;padding:10px;text-align:center}
 .kpi .lb{font-size:10px;text-transform:uppercase;opacity:.6;letter-spacing:1px}
 .kpi .vl{font-size:18px;font-weight:700;margin-top:2px}
 .success{background:rgba(46,204,113,.15);border:1px solid #2ecc71;border-radius:8px;padding:16px;text-align:center;display:none}
@@ -43,18 +58,17 @@ input[type=file]{display:none}
 <body>
 <div class="wrap">
 <h1>MAGNUM IMPORT — Atualizar Dashboard</h1>
-<p class="sub">Anexe os arquivos, processe e publique automaticamente.</p>
+<p class="sub">Faça upload dos arquivos e publique automaticamente.</p>
 
 <div class="card">
-<h2>1. Arquivos de Dados</h2>
-<label class="file-lbl" id="lbl_fat"><span class="icon">📊</span><span class="name">01 — Faturamento e Vendas (.xlsx)</span><span class="status" id="st_fat">—</span><input type="file" id="f_fat" accept=".xlsx,.xls" onchange="markFile(this,'fat')"></label>
-<label class="file-lbl" id="lbl_desp"><span class="icon">💸</span><span class="name">02 — Despesas (.xlsx)</span><span class="status" id="st_desp">—</span><input type="file" id="f_desp" accept=".xlsx,.xls" onchange="markFile(this,'desp')"></label>
-<label class="file-lbl" id="lbl_cir"><span class="icon">🏥</span><span class="name">03 — Cirurgias (.xlsx)</span><span class="status" id="st_cir">—</span><input type="file" id="f_cir" accept=".xlsx,.xls" onchange="markFile(this,'cir')"></label>
-<label class="file-lbl" id="lbl_inad"><span class="icon">⚠️</span><span class="name">04 — Inadimplência (.xlsx)</span><span class="status" id="st_inad">—</span><input type="file" id="f_inad" accept=".xlsx,.xls" onchange="markFile(this,'inad')"></label>
-<label class="file-lbl" id="lbl_rec"><span class="icon">💰</span><span class="name">05 — Recebimento de Clientes (.xlsx)</span><span class="status" id="st_rec">—</span><input type="file" id="f_rec" accept=".xlsx,.xls" onchange="markFile(this,'rec')"></label>
-<label class="file-lbl" id="lbl_rxd"><span class="icon">📈</span><span class="name">06 — Receita x Despesa (.xlsx) <span style="opacity:.4;font-size:11px">(opcional)</span> <span style="opacity:.4;font-size:11px">(opcional)</span></span><span class="status" id="st_rxd">—</span><input type="file" id="f_rxd" accept=".xlsx,.xls" onchange="markFile(this,'rxd')"></label>
-<label class="file-lbl" id="lbl_sb"><span class="icon">🏦</span><span class="name">07 — Saldo Bancário (.xlsx)</span><span class="status" id="st_sb">—</span><input type="file" id="f_sb" accept=".xlsx,.xls" onchange="markFile(this,'sb')"></label>
-<label class="file-lbl" id="lbl_inv"><span class="icon">📄</span><span class="name">Posição Consolidada de Investimentos (.pdf)</span><span class="status" id="st_inv">—</span><input type="file" id="f_inv" accept=".pdf" onchange="markFile(this,'inv')"></label>
+<h2>1. Upload de Arquivos</h2>
+<div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+<div class="dz-icon">📂</div>
+<div class="dz-label">Clique ou arraste os arquivos aqui</div>
+<div class="dz-hint">Selecione todos de uma vez — identificação automática pelo nome</div>
+</div>
+<input type="file" id="fileInput" multiple accept=".xlsx,.xls,.pdf" onchange="handleFiles(this.files)">
+<div class="flist" id="flist"></div>
 </div>
 
 <div class="card">
@@ -90,16 +104,99 @@ var CIR_EXCLUDE=new Set(['AGULHA BONEE','AGULHA-BONEE','SPEED-TERCEIROS','SONDAS
 var REC_NAME_EXCLUDE=new Set(['MAGNUM IMPORT','MAGNUM IMPORT MEDICAL','ITAU','BANCO BRASIL','BANCO DO BRASIL SA']);
 var DFM_EXCLUDE=new Set(['COMPRAS REVENDA','IMPORTACAO','IMPOSTO','RETIRADA']);
 
-var files={fat:null,desp:null,cir:null,inad:null,rec:null,rxd:null,sb:null,inv:null};
+// File categories: key, label, icon, required, accept
+var CATS=[
+  {key:'fat',label:'Faturamento e Vendas',icon:'📊',req:true,prefix:'01'},
+  {key:'desp',label:'Despesas',icon:'💸',req:true,prefix:'02'},
+  {key:'cir',label:'Cirurgias',icon:'🏥',req:true,prefix:'03'},
+  {key:'inad',label:'Inadimplência',icon:'⚠️',req:true,prefix:'04'},
+  {key:'rec',label:'Recebimento de Clientes',icon:'💰',req:true,prefix:'05'},
+  {key:'rxd',label:'Receita x Despesa',icon:'📈',req:false,prefix:'06'},
+  {key:'sb',label:'Saldo Bancário',icon:'🏦',req:true,prefix:'07'},
+  {key:'inv',label:'Investimentos (PDF)',icon:'📄',req:false,prefix:null}
+];
 var REQUIRED=['fat','desp','cir','inad','rec','sb'];
 
-function markFile(inp,key){
-  var f=inp.files[0];if(!f)return;
-  files[key]=f;
-  document.getElementById('lbl_'+key).classList.add('loaded');
-  document.getElementById('st_'+key).textContent=f.name;
+var files={fat:null,desp:null,cir:null,inad:null,rec:null,rxd:null,sb:null,inv:null};
+
+// ============ FILE DETECTION ============
+function detectCategory(file){
+  var name=file.name.toUpperCase();
+  // PDF → investimentos
+  if(name.endsWith('.PDF'))return 'inv';
+  // Match by prefix number
+  for(var i=0;i<CATS.length;i++){
+    if(CATS[i].prefix && name.indexOf(CATS[i].prefix+'_')===0)return CATS[i].key;
+  }
+  // Fallback: match by keyword in name
+  if(name.indexOf('FATURAMENTO')>=0||name.indexOf('VENDAS')>=0)return 'fat';
+  if(name.indexOf('DESPESA')>=0&&name.indexOf('RECEITA')<0)return 'desp';
+  if(name.indexOf('CIRURGIA')>=0)return 'cir';
+  if(name.indexOf('INADIMPL')>=0)return 'inad';
+  if(name.indexOf('RECEBIMENTO')>=0)return 'rec';
+  if(name.indexOf('RECEITA')>=0)return 'rxd';
+  if(name.indexOf('SALDO')>=0||name.indexOf('BANCARI')>=0)return 'sb';
+  return null;
+}
+
+function handleFiles(fileList){
+  for(var i=0;i<fileList.length;i++){
+    var f=fileList[i];
+    var cat=detectCategory(f);
+    if(cat)files[cat]=f;
+  }
+  renderFileList();
   checkReady();
 }
+
+function removeFile(key){
+  files[key]=null;
+  renderFileList();
+  checkReady();
+}
+
+function renderFileList(){
+  var html='';
+  var hasAny=false;
+  CATS.forEach(function(c){
+    var f=files[c.key];
+    if(f){
+      hasAny=true;
+      html+='<div class="fitem ok">';
+      html+='<span class="fi-icon">'+c.icon+'</span>';
+      html+='<span class="fi-cat">'+c.label+'</span>';
+      html+='<span class="fi-name" title="'+f.name+'">'+f.name+'</span>';
+      html+='<span class="fi-status check">✓</span>';
+      html+='<span class="fi-remove" onclick="removeFile(\''+c.key+'\')" title="Remover">✕</span>';
+      html+='</div>';
+    }else if(c.req){
+      html+='<div class="fitem">';
+      html+='<span class="fi-icon" style="opacity:.3">'+c.icon+'</span>';
+      html+='<span class="fi-cat" style="opacity:.4">'+c.label+'</span>';
+      html+='<span class="fi-name" style="opacity:.3">pendente</span>';
+      html+='<span class="fi-status miss">—</span>';
+      html+='<span class="fi-remove" style="visibility:hidden">✕</span>';
+      html+='</div>';
+    }
+  });
+  document.getElementById('flist').innerHTML=html;
+}
+
+// ============ DRAG & DROP ============
+function initDragDrop(){
+  var dz=document.getElementById('dropzone');
+  ['dragenter','dragover'].forEach(function(ev){
+    dz.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();dz.classList.add('over');});
+  });
+  ['dragleave','drop'].forEach(function(ev){
+    dz.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();dz.classList.remove('over');});
+  });
+  dz.addEventListener('drop',function(e){
+    handleFiles(e.dataTransfer.files);
+  });
+}
+
+// ============ TOKEN & READY ============
 function checkReady(){
   var ok=REQUIRED.every(function(k){return files[k]});
   document.getElementById('btnProcess').disabled=!ok||!getToken();
@@ -124,16 +221,13 @@ function parseDate(val){
   if(!val)return null;
   if(val instanceof Date)return val;
   if(typeof val==='number'){
-    // Excel serial date
     var d=new Date((val-25569)*86400000);
     return isNaN(d.getTime())?null:d;
   }
   if(typeof val==='string'){
     val=val.trim();
-    // DD/MM/YYYY
     var m1=val.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
     if(m1)return new Date(+m1[3],+m1[2]-1,+m1[1]);
-    // YYYY-MM-DD
     var m2=val.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
     if(m2)return new Date(+m2[1],+m2[2]-1,+m2[3]);
   }
@@ -164,7 +258,7 @@ function readXlsx(file){
       var wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
       var ws=wb.Sheets[wb.SheetNames[0]];
       var data=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
-      resolve(data.slice(1)); // skip header
+      resolve(data.slice(1));
     };
     reader.readAsArrayBuffer(file);
   });
@@ -178,7 +272,6 @@ function readPdf(file){
       for(var i=1;i<=pdf.numPages;i++){
         var page=await pdf.getPage(i);
         var tc=await page.getTextContent();
-        // Group text items by y-position to reconstruct lines
         var lineMap={};
         tc.items.forEach(function(it){
           if(!it.str||!it.str.trim())return;
@@ -220,13 +313,6 @@ function toJs(val){
 function dateLte(d,last){
   return d.getFullYear()<last.getFullYear()||(d.getFullYear()===last.getFullYear()&&(d.getMonth()<last.getMonth()||(d.getMonth()===last.getMonth()&&d.getDate()<=last.getDate())));
 }
-function getLastBizDay(){
-  var today=new Date();
-  var d=new Date(today.getFullYear(),today.getMonth(),today.getDate());
-  // Go back to yesterday first (data files are usually from day before)
-  // Actually, detect from file names. Use the latest date found in faturamento data.
-  return d;
-}
 function detectLastBizFromData(rows){
   var maxD=null;
   for(var i=0;i<rows.length;i++){
@@ -249,7 +335,7 @@ async function processAll(){
   btn.disabled=true;btn.textContent='Processando...';
   document.getElementById('log').textContent='';
   document.getElementById('success').style.display='none';
-  
+
   try{
     var TOKEN=getToken();
     if(!TOKEN)throw new Error('Token GitHub não configurado');
@@ -268,7 +354,6 @@ async function processAll(){
     // Detect LAST_BIZ from faturamento data
     var LAST_BIZ=detectLastBizFromData(fat_rows);
     if(!LAST_BIZ){
-      // Fallback: use yesterday
       LAST_BIZ=new Date();LAST_BIZ.setDate(LAST_BIZ.getDate()-1);
       while(LAST_BIZ.getDay()===0||LAST_BIZ.getDay()===6)LAST_BIZ.setDate(LAST_BIZ.getDate()-1);
     }
@@ -325,7 +410,6 @@ async function processAll(){
     log('🏥 Processando Cirurgias...');
     var ct={},ctm_d={},cmd_d={},cmdm_d={};
     var seen=new Set(),c65_patients=new Set();
-    // First pass: collect C65 patients
     cir_rows.forEach(function(r){
       if(r.length<18||getCode(r[17])!=='C65')return;
       var tipo=r[3]?String(r[3]).trim().toUpperCase():'';
@@ -336,7 +420,6 @@ async function processAll(){
       var med=r[5]?String(r[5]).trim():'';
       c65_patients.add(dt.toISOString().slice(0,10)+'|'+pac+'|'+tipo+'|'+med);
     });
-    // Second pass
     cir_rows.forEach(function(r){
       if(r.length<18)return;
       var dt=parseDate(r[0]);if(!dt||!dateLte(dt,LAST_BIZ))return;
@@ -458,7 +541,7 @@ async function processAll(){
       log('⏭️ PDF de investimentos não fornecido — valores INV serão preservados do dashboard atual');
     }
 
-    // ============ FETCH CURRENT FILE (needed for replacement + fallback INV) ============
+    // ============ FETCH CURRENT FILE ============
     log('\n📥 Buscando arquivo atual do GitHub...');
     var apiUrl='https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH;
     var fileResp=await fetch(apiUrl,{headers:{Authorization:'Bearer '+TOKEN,Accept:'application/vnd.github.v3+json'}});
@@ -469,9 +552,9 @@ async function processAll(){
     var content=decodeURIComponent(escape(atob(b64)));
     log('  Arquivo: '+content.length+' chars | SHA: '+fileSha.substring(0,12));
 
-    // If no PDF, extract old INV and SB from current file
+    // If no PDF, extract old INV from current file
     if(!files.inv){
-      log('  Extraindo INV e SB anteriores...');
+      log('  Extraindo INV anteriores...');
       try{
         var invMatch=content.match(/var INV=(\{[^;]*\})/);
         if(invMatch){
@@ -486,27 +569,8 @@ async function processAll(){
       }catch(ex){log('  Aviso: não foi possível extrair INV anterior');}
     }
 
-    // If no PDF, extract old INV from current file
-    if(!files.inv){
-      log('  Extraindo INV anteriores...');
-      try{
-        var invMatch=content.match(/var INV=\{([^;]*)\}/);
-        if(invMatch){
-          var oldInv=(new Function('return {'+invMatch[1]+'}'))();
-          for(var ik in oldInv){
-            var codeForName=null;
-            for(var cc in CODE_TO_NAME)if(CODE_TO_NAME[cc]===ik){codeForName=cc;break;}
-            if(codeForName)inv_raw[codeForName]=oldInv[ik];
-          }
-          log('  INV preservado: '+Object.keys(oldInv).join(', '));
-        }
-      }catch(ex){log('  Aviso: nao foi possivel extrair INV anterior');}
-    }
-
     // ============ BUILD PAYLOAD ============
     log('\n🔧 Construindo payload...');
-
-    // GR (growth ratio)
     var gr={},grm_d={};
     VALID_CODES.forEach(function(c){
       var f=fu[c]||0,d=du[c]||0;
@@ -521,7 +585,6 @@ async function processAll(){
 
     var ciclo=fatTotal>0?Math.round((it_total/fatTotal)*365):0;
 
-    // SB final
     var sb_final={};
     for(var c3 in sb_raw){
       var n=CODE_TO_NAME[c3];if(!n)continue;
@@ -534,7 +597,6 @@ async function processAll(){
     var inv_final={};
     for(var c4 in inv_raw)if(CODE_TO_NAME[c4])inv_final[CODE_TO_NAME[c4]]=inv_raw[c4];
 
-    // DS arrays
     var ds_arr=Object.entries(ds_d).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});
     var dsm_f={};for(var m1 in dsm_d){dsm_f[m1]=Object.entries(dsm_d[m1]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}
     var dsu_f={};for(var c5 in dsu_d){var n5=CODE_TO_NAME[c5];if(n5)dsu_f[n5]=Object.entries(dsu_d[c5]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}
@@ -543,10 +605,8 @@ async function processAll(){
     var dsdu_f={};for(var c7 in dsdu_d){var n7=CODE_TO_NAME[c7];if(n7){dsdu_f[n7]={};for(var sub2 in dsdu_d[c7])dsdu_f[n7][sub2]=Object.entries(dsdu_d[c7][sub2]).map(function(e){return{n:e[0],v:Math.round(e[1].v*100)/100,o:e[1].o}}).sort(function(a,b){return b.v-a.v});}}
     var dfm_f={};for(var mf in dm)dfm_f[mf]=Math.round((dm[mf]-(dfm_excl[mf]||0))*100)/100;
 
-    // CM = cirurgias monthly counts
     var cir_monthly={};for(var c8 in ctm_d)for(var m3 in ctm_d[c8])cir_monthly[m3]=(cir_monthly[m3]||0)+ctm_d[c8][m3];
 
-    // Round values
     function rd(obj){var r={};for(var k in obj)r[k]=Math.round(obj[k]*100)/100;return r;}
 
     var P={};
@@ -654,10 +714,12 @@ async function processAll(){
   }
 }
 
-// Init - wait for libraries to load
+// Init
 window.addEventListener('DOMContentLoaded', function(){
   var savedToken=localStorage.getItem('gh_pat');
   if(savedToken)document.getElementById('ghToken').value=savedToken;
+  initDragDrop();
+  renderFileList();
   checkReady();
   var pdfCheck=setInterval(function(){
     if(typeof pdfjsLib!=='undefined'){
