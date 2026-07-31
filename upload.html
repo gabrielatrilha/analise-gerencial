@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Magnum Import — Atualizar Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0a1628;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
@@ -52,7 +52,7 @@ input[type=file]{display:none}
 <label class="file-lbl" id="lbl_cir"><span class="icon">🏥</span><span class="name">03 — Cirurgias (.xlsx)</span><span class="status" id="st_cir">—</span><input type="file" id="f_cir" accept=".xlsx,.xls" onchange="markFile(this,'cir')"></label>
 <label class="file-lbl" id="lbl_inad"><span class="icon">⚠️</span><span class="name">04 — Inadimplência (.xlsx)</span><span class="status" id="st_inad">—</span><input type="file" id="f_inad" accept=".xlsx,.xls" onchange="markFile(this,'inad')"></label>
 <label class="file-lbl" id="lbl_rec"><span class="icon">💰</span><span class="name">05 — Recebimento de Clientes (.xlsx)</span><span class="status" id="st_rec">—</span><input type="file" id="f_rec" accept=".xlsx,.xls" onchange="markFile(this,'rec')"></label>
-<label class="file-lbl" id="lbl_rxd"><span class="icon">📈</span><span class="name">06 — Receita x Despesa (.xlsx) <span style="opacity:.4;font-size:11px">(opcional)</span></span><span class="status" id="st_rxd">—</span><input type="file" id="f_rxd" accept=".xlsx,.xls" onchange="markFile(this,'rxd')"></label>
+<label class="file-lbl" id="lbl_rxd"><span class="icon">📈</span><span class="name">06 — Receita x Despesa (.xlsx) <span style="opacity:.4;font-size:11px">(opcional)</span> <span style="opacity:.4;font-size:11px">(opcional)</span></span><span class="status" id="st_rxd">—</span><input type="file" id="f_rxd" accept=".xlsx,.xls" onchange="markFile(this,'rxd')"></label>
 <label class="file-lbl" id="lbl_sb"><span class="icon">🏦</span><span class="name">07 — Saldo Bancário (.xlsx)</span><span class="status" id="st_sb">—</span><input type="file" id="f_sb" accept=".xlsx,.xls" onchange="markFile(this,'sb')"></label>
 <label class="file-lbl" id="lbl_inv"><span class="icon">📄</span><span class="name">Posição Consolidada de Investimentos (.pdf)</span><span class="status" id="st_inv">—</span><input type="file" id="f_inv" accept=".pdf" onchange="markFile(this,'inv')"></label>
 </div>
@@ -486,6 +486,23 @@ async function processAll(){
       }catch(ex){log('  Aviso: não foi possível extrair INV anterior');}
     }
 
+    // If no PDF, extract old INV from current file
+    if(!files.inv){
+      log('  Extraindo INV anteriores...');
+      try{
+        var invMatch=content.match(/var INV=\{([^;]*)\}/);
+        if(invMatch){
+          var oldInv=(new Function('return {'+invMatch[1]+'}'))();
+          for(var ik in oldInv){
+            var codeForName=null;
+            for(var cc in CODE_TO_NAME)if(CODE_TO_NAME[cc]===ik){codeForName=cc;break;}
+            if(codeForName)inv_raw[codeForName]=oldInv[ik];
+          }
+          log('  INV preservado: '+Object.keys(oldInv).join(', '));
+        }
+      }catch(ex){log('  Aviso: nao foi possivel extrair INV anterior');}
+    }
+
     // ============ BUILD PAYLOAD ============
     log('\n🔧 Construindo payload...');
 
@@ -637,11 +654,18 @@ async function processAll(){
   }
 }
 
-// Init
-pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-var savedToken=localStorage.getItem('gh_pat');
-if(savedToken)document.getElementById('ghToken').value=savedToken;
-checkReady();
+// Init - wait for libraries to load
+window.addEventListener('DOMContentLoaded', function(){
+  var savedToken=localStorage.getItem('gh_pat');
+  if(savedToken)document.getElementById('ghToken').value=savedToken;
+  checkReady();
+  var pdfCheck=setInterval(function(){
+    if(typeof pdfjsLib!=='undefined'){
+      clearInterval(pdfCheck);
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  },200);
+});
 </script>
 </body>
 </html>
