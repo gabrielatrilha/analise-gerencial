@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Magnum Import — Atualizar Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a1628;color:#fff;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px}
+.wrap{max-width:900px;margin:0 auto;padding:20px}
+h1{font-size:22px;font-weight:700;margin-bottom:4px;letter-spacing:1px}
+.sub{opacity:.7;font-size:13px;margin-bottom:24px}
+.card{background:rgba(255,255,255,.06);border-radius:12px;padding:20px;margin-bottom:16px}
+.card h2{font-size:16px;margin-bottom:12px;color:#4db8ff}
+label.file-lbl{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px dashed rgba(255,255,255,.2);border-radius:8px;cursor:pointer;margin-bottom:8px;transition:.2s}
+label.file-lbl:hover{border-color:#4db8ff;background:rgba(75,184,255,.05)}
+label.file-lbl .icon{font-size:20px;min-width:28px;text-align:center}
+label.file-lbl .name{flex:1;font-size:13px}
+label.file-lbl .status{font-size:12px;opacity:.6}
+label.file-lbl.loaded{border-color:#2ecc71;background:rgba(46,204,113,.08)}
+label.file-lbl.loaded .status{color:#2ecc71;opacity:1}
+input[type=file]{display:none}
+.token-row{display:flex;gap:8px;align-items:center}
+.token-row input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 12px;color:#fff;font-size:13px}
+.token-row input::placeholder{opacity:.4}
+.token-row button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px}
+.token-row button:hover{background:rgba(255,255,255,.2)}
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;transition:.2s}
+.btn-process{background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff}
+.btn-process:hover{opacity:.9}
+.btn-process:disabled{opacity:.4;cursor:not-allowed}
+#log{background:rgba(0,0,0,.3);border-radius:8px;padding:12px;font-family:monospace;font-size:12px;max-height:300px;overflow-y:auto;white-space:pre-wrap;line-height:1.6;display:none}
+#log.show{display:block}
+.kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+.kpi{flex:1;min-width:120px;background:rgba(255,255,255,.06);border-radius:8px;padding:10px;text-align:center}
+.kpi .lb{font-size:10px;text-transform:uppercase;opacity:.6;letter-spacing:1px}
+.kpi .vl{font-size:18px;font-weight:700;margin-top:2px}
+.success{background:rgba(46,204,113,.15);border:1px solid #2ecc71;border-radius:8px;padding:16px;text-align:center;display:none}
+.success a{color:#4db8ff}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>MAGNUM IMPORT — Atualizar Dashboard</h1>
+<p class="sub">Anexe os arquivos, processe e publique automaticamente.</p>
+
+<div class="card">
+<h2>1. Arquivos de Dados</h2>
+<label class="file-lbl" id="lbl_fat"><span class="icon">📊</span><span class="name">01 — Faturamento e Vendas (.xlsx)</span><span class="status" id="st_fat">—</span><input type="file" id="f_fat" accept=".xlsx,.xls" onchange="markFile(this,'fat')"></label>
+<label class="file-lbl" id="lbl_desp"><span class="icon">💸</span><span class="name">02 — Despesas (.xlsx)</span><span class="status" id="st_desp">—</span><input type="file" id="f_desp" accept=".xlsx,.xls" onchange="markFile(this,'desp')"></label>
+<label class="file-lbl" id="lbl_cir"><span class="icon">🏥</span><span class="name">03 — Cirurgias (.xlsx)</span><span class="status" id="st_cir">—</span><input type="file" id="f_cir" accept=".xlsx,.xls" onchange="markFile(this,'cir')"></label>
+<label class="file-lbl" id="lbl_inad"><span class="icon">⚠️</span><span class="name">04 — Inadimplência (.xlsx)</span><span class="status" id="st_inad">—</span><input type="file" id="f_inad" accept=".xlsx,.xls" onchange="markFile(this,'inad')"></label>
+<label class="file-lbl" id="lbl_rec"><span class="icon">💰</span><span class="name">05 — Recebimento de Clientes (.xlsx)</span><span class="status" id="st_rec">—</span><input type="file" id="f_rec" accept=".xlsx,.xls" onchange="markFile(this,'rec')"></label>
+<label class="file-lbl" id="lbl_rxd"><span class="icon">📈</span><span class="name">06 — Receita x Despesa (.xlsx) <span style="opacity:.4;font-size:11px">(opcional)</span></span><span class="status" id="st_rxd">—</span><input type="file" id="f_rxd" accept=".xlsx,.xls" onchange="markFile(this,'rxd')"></label>
+<label class="file-lbl" id="lbl_sb"><span class="icon">🏦</span><span class="name">07 — Saldo Bancário (.xlsx)</span><span class="status" id="st_sb">—</span><input type="file" id="f_sb" accept=".xlsx,.xls" onchange="markFile(this,'sb')"></label>
+<label class="file-lbl" id="lbl_inv"><span class="icon">📄</span><span class="name">Posição Consolidada de Investimentos (.pdf)</span><span class="status" id="st_inv">—</span><input type="file" id="f_inv" accept=".pdf" onchange="markFile(this,'inv')"></label>
+</div>
+
+<div class="card">
+<h2>2. GitHub Token</h2>
+<p style="font-size:12px;opacity:.6;margin-bottom:8px">Token pessoal com permissão Contents (Read/Write) no repo analise-gerencial</p>
+<div class="token-row">
+<input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx">
+<button onclick="saveToken()">Salvar</button>
+</div>
+</div>
+
+<div class="card">
+<h2>3. Processar e Publicar</h2>
+<div class="kpi-row" id="kpis" style="display:none"></div>
+<button class="btn btn-process" id="btnProcess" onclick="processAll()" disabled>Processar e Atualizar Dashboard</button>
+</div>
+
+<div id="log"></div>
+<div class="success" id="success">
+✅ Dashboard atualizado com sucesso!<br>
+<a href="https://gabrielatrilha.github.io/analise-gerencial/" target="_blank">Abrir Dashboard →</a>
+</div>
+</div>
+
+<script>
+// ============ CONFIG ============
+var REPO_OWNER='gabrielatrilha',REPO_NAME='analise-gerencial',FILE_PATH='index.html',BRANCH='main';
+var CODE_TO_NAME={C61:'RS',C63:'SP',C64:'PR',C65:'HOLEP',C66:'TRAUMATO',C67:'SC',C68:'BA',CXP:'XP'};
+var VALID_CODES=new Set(Object.keys(CODE_TO_NAME));
+var FUND_MAP={ITA996703:'C61',ITA996885:'C66',ITA993056:'C65',ITA99228:'C67',BB_169188:'C63',ITA994877:'C68',SAN130071322:'C64'};
+var CMV_RATIOS={C61:0.398,C63:0.431,C64:0.373,C65:0.068,C66:0.122,C67:0.363,C68:0.531};
+var CIR_EXCLUDE=new Set(['AGULHA BONEE','AGULHA-BONEE','SPEED-TERCEIROS','SONDAS','SPEEDICATH']);
+var REC_NAME_EXCLUDE=new Set(['MAGNUM IMPORT','MAGNUM IMPORT MEDICAL','ITAU','BANCO BRASIL','BANCO DO BRASIL SA']);
+var DFM_EXCLUDE=new Set(['COMPRAS REVENDA','IMPORTACAO','IMPOSTO','RETIRADA']);
+
+var files={fat:null,desp:null,cir:null,inad:null,rec:null,rxd:null,sb:null,inv:null};
+var REQUIRED=['fat','desp','cir','inad','rec','sb'];
+
+function markFile(inp,key){
+  var f=inp.files[0];if(!f)return;
+  files[key]=f;
+  document.getElementById('lbl_'+key).classList.add('loaded');
+  document.getElementById('st_'+key).textContent=f.name;
+  checkReady();
+}
+function checkReady(){
+  var ok=REQUIRED.every(function(k){return files[k]});
+  document.getElementById('btnProcess').disabled=!ok||!getToken();
+}
+function saveToken(){
+  var t=document.getElementById('ghToken').value.trim();
+  if(t){localStorage.setItem('gh_pat',t);checkReady();}
+}
+function getToken(){
+  var t=document.getElementById('ghToken').value.trim();
+  return t||localStorage.getItem('gh_pat')||'';
+}
+function log(msg){
+  var el=document.getElementById('log');
+  el.classList.add('show');
+  el.textContent+=msg+'\n';
+  el.scrollTop=el.scrollHeight;
+}
+
+// ============ HELPERS ============
+function parseDate(val){
+  if(!val)return null;
+  if(val instanceof Date)return val;
+  if(typeof val==='number'){
+    // Excel serial date
+    var d=new Date((val-25569)*86400000);
+    return isNaN(d.getTime())?null:d;
+  }
+  if(typeof val==='string'){
+    val=val.trim();
+    // DD/MM/YYYY
+    var m1=val.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if(m1)return new Date(+m1[3],+m1[2]-1,+m1[1]);
+    // YYYY-MM-DD
+    var m2=val.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(m2)return new Date(+m2[1],+m2[2]-1,+m2[3]);
+  }
+  return null;
+}
+function sf(val){
+  if(val==null)return 0;
+  if(typeof val==='number')return val;
+  if(typeof val==='string'){
+    val=val.trim().replace(/\./g,'').replace(',','.');
+    var n=parseFloat(val);return isNaN(n)?0:n;
+  }
+  return 0;
+}
+function getCode(val){
+  if(!val)return null;
+  var s=String(val).trim().toUpperCase();
+  if(s==='C62')return null;
+  return VALID_CODES.has(s)?s:null;
+}
+function c2d(d){
+  var r={};for(var c in d)if(CODE_TO_NAME[c])r[CODE_TO_NAME[c]]=d[c];return r;
+}
+function readXlsx(file){
+  return new Promise(function(resolve){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+      var ws=wb.Sheets[wb.SheetNames[0]];
+      var data=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
+      resolve(data.slice(1)); // skip header
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+function readPdf(file){
+  return new Promise(function(resolve){
+    var reader=new FileReader();
+    reader.onload=async function(e){
+      var pdf=await pdfjsLib.getDocument({data:new Uint8Array(e.target.result)}).promise;
+      var pages=[];
+      for(var i=1;i<=pdf.numPages;i++){
+        var page=await pdf.getPage(i);
+        var tc=await page.getTextContent();
+        // Group text items by y-position to reconstruct lines
+        var lineMap={};
+        tc.items.forEach(function(it){
+          if(!it.str||!it.str.trim())return;
+          var y=Math.round(it.transform[5]);
+          if(!lineMap[y])lineMap[y]=[];
+          lineMap[y].push({x:it.transform[4],str:it.str});
+        });
+        var ys=Object.keys(lineMap).map(Number).sort(function(a,b){return b-a;});
+        var lines=ys.map(function(y){
+          return lineMap[y].sort(function(a,b){return a.x-b.x}).map(function(it){return it.str}).join(' ');
+        });
+        pages.push(lines.join('\n'));
+      }
+      resolve(pages);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+function toJs(val){
+  if(Array.isArray(val)){return '['+val.map(toJs).join(',')+']';}
+  if(val!==null&&typeof val==='object'){
+    var parts=[];
+    for(var k in val){
+      var ks=String(k);
+      if(!/^\d+$/.test(ks)&&/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(ks)){}
+      else{ks='"'+ks+'"';}
+      parts.push(ks+':'+toJs(val[k]));
+    }
+    return '{'+parts.join(',')+'}';
+  }
+  if(typeof val==='string')return '"'+val.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/'/g,"\\'").replace(/\n/g,'\\n')+'"';
+  if(typeof val==='number'){
+    if(Number.isInteger(val))return String(val);
+    return String(Math.round(val*100)/100);
+  }
+  if(val===null||val===undefined)return 'null';
+  return String(val);
+}
+function dateLte(d,last){
+  return d.getFullYear()<last.getFullYear()||(d.getFullYear()===last.getFullYear()&&(d.getMonth()<last.getMonth()||(d.getMonth()===last.getMonth()&&d.getDate()<=last.getDate())));
+}
+function getLastBizDay(){
+  var today=new Date();
+  var d=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  // Go back to yesterday first (data files are usually from day before)
+  // Actually, detect from file names. Use the latest date found in faturamento data.
+  return d;
+}
+function detectLastBizFromData(rows){
+  var maxD=null;
+  for(var i=0;i<rows.length;i++){
+    var dt=parseDate(rows[i][1]);
+    if(dt&&dt.getFullYear()===new Date().getFullYear()){
+      if(!maxD||dt>maxD)maxD=dt;
+    }
+  }
+  return maxD;
+}
+function fmtDate(d){
+  var dd=String(d.getDate()).padStart(2,'0');
+  var mm=String(d.getMonth()+1).padStart(2,'0');
+  return dd+'/'+mm+'/'+d.getFullYear();
+}
+
+// ============ MAIN PROCESSING ============
+async function processAll(){
+  var btn=document.getElementById('btnProcess');
+  btn.disabled=true;btn.textContent='Processando...';
+  document.getElementById('log').textContent='';
+  document.getElementById('success').style.display='none';
+  
+  try{
+    var TOKEN=getToken();
+    if(!TOKEN)throw new Error('Token GitHub não configurado');
+
+    var TARGET_YEAR=new Date().getFullYear();
+
+    // Read all files
+    log('📂 Lendo arquivos...');
+    var fat_rows=await readXlsx(files.fat);log('  Faturamento: '+fat_rows.length+' linhas');
+    var desp_rows=await readXlsx(files.desp);log('  Despesas: '+desp_rows.length+' linhas');
+    var cir_rows=await readXlsx(files.cir);log('  Cirurgias: '+cir_rows.length+' linhas');
+    var inad_rows=await readXlsx(files.inad);log('  Inadimplência: '+inad_rows.length+' linhas');
+    var rec_rows=await readXlsx(files.rec);log('  Recebimento: '+rec_rows.length+' linhas');
+    var sb_rows=await readXlsx(files.sb);log('  Saldo Bancário: '+sb_rows.length+' linhas');
+
+    // Detect LAST_BIZ from faturamento data
+    var LAST_BIZ=detectLastBizFromData(fat_rows);
+    if(!LAST_BIZ){
+      // Fallback: use yesterday
+      LAST_BIZ=new Date();LAST_BIZ.setDate(LAST_BIZ.getDate()-1);
+      while(LAST_BIZ.getDay()===0||LAST_BIZ.getDay()===6)LAST_BIZ.setDate(LAST_BIZ.getDate()-1);
+    }
+    log('  Data limite: '+fmtDate(LAST_BIZ));
+
+    // ============ FATURAMENTO ============
+    log('\n📊 Processando Faturamento...');
+    var fm={},fu={},fum={};
+    fat_rows.forEach(function(r){
+      if(r.length<17)return;
+      var dt=parseDate(r[1]);if(!dt||!dateLte(dt,LAST_BIZ))return;
+      if(dt.getFullYear()!==TARGET_YEAR)return;
+      var c=getCode(r[15]);if(!c)return;
+      var v=sf(r[16]),m=dt.getMonth()+1;
+      fm[m]=(fm[m]||0)+v;
+      fu[c]=(fu[c]||0)+v;
+      if(!fum[c])fum[c]={};fum[c][m]=(fum[c][m]||0)+v;
+    });
+    var fatTotal=Object.values(fm).reduce(function(a,b){return a+b},0);
+    log('  Total: R$ '+Math.round(fatTotal).toLocaleString('pt-BR'));
+
+    // ============ DESPESAS ============
+    log('💸 Processando Despesas...');
+    var dm={},du={},dum={};
+    var ds_d={},dsm_d={},dsu_d={},dsum_d={},dsd_d={},dsdu_d={};
+    var dfm_excl={};
+    desp_rows.forEach(function(r){
+      if(r.length<14)return;
+      var dt=parseDate(r[8]);if(!dt||!dateLte(dt,LAST_BIZ))return;
+      if(dt.getFullYear()!==TARGET_YEAR)return;
+      var c=getCode(r[10]);if(!c)return;
+      var v=sf(r[13]),m=dt.getMonth()+1;
+      var adic=r[0]?String(r[0]).trim().toUpperCase():'';
+      var sub=r[4]?String(r[4]).trim():'SEM SUBSETOR';
+      var nome=r[1]?String(r[1]).trim():'SEM NOME';
+      dm[m]=(dm[m]||0)+v;du[c]=(du[c]||0)+v;
+      if(!dum[c])dum[c]={};dum[c][m]=(dum[c][m]||0)+v;
+      ds_d[sub]=(ds_d[sub]||0)+v;
+      if(!dsm_d[m])dsm_d[m]={};dsm_d[m][sub]=(dsm_d[m][sub]||0)+v;
+      if(!dsu_d[c])dsu_d[c]={};dsu_d[c][sub]=(dsu_d[c][sub]||0)+v;
+      if(!dsum_d[c])dsum_d[c]={};if(!dsum_d[c][m])dsum_d[c][m]={};dsum_d[c][m][sub]=(dsum_d[c][m][sub]||0)+v;
+      if(!dsd_d[sub])dsd_d[sub]={};
+      if(!dsd_d[sub][nome])dsd_d[sub][nome]={v:0,o:adic};
+      dsd_d[sub][nome].v+=v;
+      if(!dsdu_d[c])dsdu_d[c]={};if(!dsdu_d[c][sub])dsdu_d[c][sub]={};
+      if(!dsdu_d[c][sub][nome])dsdu_d[c][sub][nome]={v:0,o:adic};
+      dsdu_d[c][sub][nome].v+=v;
+      if(DFM_EXCLUDE.has(adic))dfm_excl[m]=(dfm_excl[m]||0)+v;
+    });
+    var despTotal=Object.values(dm).reduce(function(a,b){return a+b},0);
+    log('  Total: R$ '+Math.round(despTotal).toLocaleString('pt-BR'));
+
+    // ============ CIRURGIAS ============
+    log('🏥 Processando Cirurgias...');
+    var ct={},ctm_d={},cmd_d={},cmdm_d={};
+    var seen=new Set(),c65_patients=new Set();
+    // First pass: collect C65 patients
+    cir_rows.forEach(function(r){
+      if(r.length<18||getCode(r[17])!=='C65')return;
+      var tipo=r[3]?String(r[3]).trim().toUpperCase():'';
+      if(CIR_EXCLUDE.has(tipo))return;
+      var dt=parseDate(r[0]);if(!dt||!dateLte(dt,LAST_BIZ))return;
+      if(dt.getFullYear()!==TARGET_YEAR)return;
+      var pac=r[11]?String(r[11]).trim():'';
+      var med=r[5]?String(r[5]).trim():'';
+      c65_patients.add(dt.toISOString().slice(0,10)+'|'+pac+'|'+tipo+'|'+med);
+    });
+    // Second pass
+    cir_rows.forEach(function(r){
+      if(r.length<18)return;
+      var dt=parseDate(r[0]);if(!dt||!dateLte(dt,LAST_BIZ))return;
+      if(dt.getFullYear()!==TARGET_YEAR)return;
+      var c=getCode(r[17]);if(!c)return;
+      var tipo=r[3]?String(r[3]).trim().toUpperCase():'';
+      if(CIR_EXCLUDE.has(tipo))return;
+      var pac=r[11]?String(r[11]).trim():'';
+      var med=r[5]?String(r[5]).trim():'';
+      var m=dt.getMonth()+1;
+      var key=dt.toISOString().slice(0,10)+'|'+pac+'|'+tipo+'|'+med+'|'+c;
+      if(seen.has(key))return;seen.add(key);
+      if(c==='C61'&&c65_patients.has(dt.toISOString().slice(0,10)+'|'+pac+'|'+tipo+'|'+med))return;
+      ct[c]=(ct[c]||0)+1;
+      if(!ctm_d[c])ctm_d[c]={};ctm_d[c][m]=(ctm_d[c][m]||0)+1;
+      if(!cmd_d[c])cmd_d[c]={};cmd_d[c][med]=(cmd_d[c][med]||0)+1;
+      if(!cmdm_d[c])cmdm_d[c]={};if(!cmdm_d[c][m])cmdm_d[c][m]={};cmdm_d[c][m][med]=(cmdm_d[c][m][med]||0)+1;
+    });
+    var cirTotal=Object.values(ct).reduce(function(a,b){return a+b},0);
+    log('  Total: '+cirTotal.toLocaleString('pt-BR'));
+
+    // ============ INADIMPLENCIA ============
+    log('⚠️ Processando Inadimplência...');
+    var iu={},it_total=0;
+    inad_rows.forEach(function(r){
+      if(r.length<12)return;
+      var c=getCode(r[6]);if(!c)return;
+      var v=sf(r[11]);
+      iu[c]=(iu[c]||0)+v;it_total+=v;
+    });
+    log('  Total: R$ '+Math.round(it_total).toLocaleString('pt-BR'));
+
+    // ============ RECEBIMENTO ============
+    log('💰 Processando Recebimento...');
+    var rm={},ru={},rum={};
+    rec_rows.forEach(function(r){
+      if(r.length<12)return;
+      var q=r[4]?String(r[4]).trim().toUpperCase():'';
+      if(q!=='SIM')return;
+      var c=getCode(r[0]);if(!c)return;
+      var dt=parseDate(r[2]);if(!dt||!dateLte(dt,LAST_BIZ))return;
+      if(dt.getFullYear()!==TARGET_YEAR)return;
+      var nome=r[5]?String(r[5]).trim().toUpperCase():'';
+      if(REC_NAME_EXCLUDE.has(nome))return;
+      var v=sf(r[11]);if(v>100000)v=v/100;
+      var m=dt.getMonth()+1;
+      rm[m]=(rm[m]||0)+v;ru[c]=(ru[c]||0)+v;
+      if(!rum[c])rum[c]={};rum[c][m]=(rum[c][m]||0)+v;
+    });
+    var recTotal=Object.values(rm).reduce(function(a,b){return a+b},0);
+    log('  Total: R$ '+Math.round(recTotal).toLocaleString('pt-BR'));
+
+    // ============ CMV ============
+    log('📦 Calculando CMV...');
+    var cu_cmv={},cum_cmv={},cmvm_monthly={};
+    VALID_CODES.forEach(function(c){
+      var ratio=CMV_RATIOS[c]||0;
+      cu_cmv[c]=Math.round((fu[c]||0)*ratio*100)/100;
+      cum_cmv[c]={};
+      var ms=fum[c]||{};
+      for(var mk in ms){
+        var cv=Math.round(ms[mk]*ratio*100)/100;
+        cum_cmv[c][mk]=cv;
+        cmvm_monthly[mk]=(cmvm_monthly[mk]||0)+cv;
+      }
+    });
+    var cmvTotal=Object.values(cmvm_monthly).reduce(function(a,b){return a+b},0);
+    log('  Total: R$ '+Math.round(cmvTotal).toLocaleString('pt-BR'));
+
+    // ============ SALDO BANCARIO ============
+    log('🏦 Processando Saldo Bancário...');
+    var sb_raw={};
+    sb_rows.forEach(function(r){
+      if(r.length<3)return;
+      var fund=r[0]?String(r[0]).replace(/[^A-Za-z0-9_]/g,''):'';
+      var c=null;
+      for(var fk in FUND_MAP){if(fund.indexOf(fk)>=0){c=FUND_MAP[fk];break;}}
+      if(!c)return;
+      var dt=parseDate(r[1]),v=sf(r[2]);
+      if(!sb_raw[c]||(dt&&(!sb_raw[c].dt||dt>=sb_raw[c].dt))){
+        sb_raw[c]={cc:v,dt:dt};
+      }
+    });
+
+    // ============ INVESTIMENTOS ============
+    var inv_raw={};
+    if(files.inv){
+      log('📄 Processando Investimentos PDF...');
+      var pages=await readPdf(files.inv);
+      var acct_map={99305:'C65',99688:'C66',99228:'C67',99141:'C64',99670:'C61'};
+      var events=[];
+      pages.forEach(function(text,pi){
+        var lines=text.split('\n');
+        lines.forEach(function(line,li){
+          for(var acct in acct_map){
+            if(line.indexOf(acct)>=0)events.push({p:pi,l:li,t:'acct',c:acct_map[acct],v:0});
+          }
+          var nums=line.match(/[\d.]+,\d{2}/g);
+          if(nums)nums.forEach(function(n){
+            var cleaned=n.replace(/\./g,'').replace(',','.');
+            var val=parseFloat(cleaned);
+            if(!isNaN(val)&&val>50000)events.push({p:pi,l:li,t:'val',c:'',v:val});
+          });
+        });
+      });
+      events.sort(function(a,b){return a.p-b.p||a.l-b.l;});
+      var currentCode=null,acctValues={};
+      events.forEach(function(ev){
+        if(ev.t==='acct'){currentCode=ev.c;if(!acctValues[currentCode])acctValues[currentCode]=[];}
+        else if(ev.t==='val'&&currentCode){acctValues[currentCode].push(ev.v);}
+      });
+      for(var code in acctValues){
+        var vals=acctValues[code];
+        var slSum=0;for(var i=2;i<vals.length;i+=3)slSum+=vals[i];
+        inv_raw[code]=Math.round(slSum);
+      }
+      for(var c2 in inv_raw)log('  '+CODE_TO_NAME[c2]+': R$ '+inv_raw[c2].toLocaleString('pt-BR'));
+    }else{
+      log('⏭️ PDF de investimentos não fornecido — valores INV serão preservados do dashboard atual');
+    }
+
+    // ============ FETCH CURRENT FILE (needed for replacement + fallback INV) ============
+    log('\n📥 Buscando arquivo atual do GitHub...');
+    var apiUrl='https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH;
+    var fileResp=await fetch(apiUrl,{headers:{Authorization:'Bearer '+TOKEN,Accept:'application/vnd.github.v3+json'}});
+    if(!fileResp.ok)throw new Error('Erro ao buscar arquivo: '+fileResp.status);
+    var fileData=await fileResp.json();
+    var fileSha=fileData.sha;
+    var b64=fileData.content.replace(/\n/g,'');
+    var content=decodeURIComponent(escape(atob(b64)));
+    log('  Arquivo: '+content.length+' chars | SHA: '+fileSha.substring(0,12));
+
+    // If no PDF, extract old INV and SB from current file
+    if(!files.inv){
+      log('  Extraindo INV e SB anteriores...');
+      try{
+        var invMatch=content.match(/var INV=(\{[^;]*\})/);
+        if(invMatch){
+          var oldInv=eval('('+invMatch[1]+')');
+          for(var ik in oldInv){
+            var codeForName=null;
+            for(var cc in CODE_TO_NAME)if(CODE_TO_NAME[cc]===ik){codeForName=cc;break;}
+            if(codeForName)inv_raw[codeForName]=oldInv[ik];
+          }
+          log('  INV preservado: '+Object.keys(oldInv).join(', '));
+        }
+      }catch(ex){log('  Aviso: não foi possível extrair INV anterior');}
+    }
+
+    // ============ BUILD PAYLOAD ============
+    log('\n🔧 Construindo payload...');
+
+    // GR (growth ratio)
+    var gr={},grm_d={};
+    VALID_CODES.forEach(function(c){
+      var f=fu[c]||0,d=du[c]||0;
+      gr[c]=d>0?Math.round(f/d*10000)/10000:0;
+      grm_d[c]={};
+      var allMonths=new Set(Object.keys(fum[c]||{}).concat(Object.keys(dum[c]||{})));
+      allMonths.forEach(function(m){
+        var fv=(fum[c]||{})[m]||0,dv=(dum[c]||{})[m]||0;
+        grm_d[c][m]=dv>0?Math.round(fv/dv*10000)/10000:0;
+      });
+    });
+
+    var ciclo=fatTotal>0?Math.round((it_total/fatTotal)*365):0;
+
+    // SB final
+    var sb_final={};
+    for(var c3 in sb_raw){
+      var n=CODE_TO_NAME[c3];if(!n)continue;
+      var inv_v=inv_raw[c3]||0;
+      var dt_s=sb_raw[c3].dt?fmtDate(sb_raw[c3].dt).slice(0,5):'29/07';
+      sb_final[n]={cc:Math.round(sb_raw[c3].cc*100)/100,inv:Math.round(inv_v),d:dt_s};
+    }
+    sb_final['XP']={cc:0,inv:0,d:fmtDate(LAST_BIZ).slice(0,5)};
+
+    var inv_final={};
+    for(var c4 in inv_raw)if(CODE_TO_NAME[c4])inv_final[CODE_TO_NAME[c4]]=inv_raw[c4];
+
+    // DS arrays
+    var ds_arr=Object.entries(ds_d).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});
+    var dsm_f={};for(var m1 in dsm_d){dsm_f[m1]=Object.entries(dsm_d[m1]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}
+    var dsu_f={};for(var c5 in dsu_d){var n5=CODE_TO_NAME[c5];if(n5)dsu_f[n5]=Object.entries(dsu_d[c5]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}
+    var dsum_f={};for(var c6 in dsum_d){var n6=CODE_TO_NAME[c6];if(n6){dsum_f[n6]={};for(var m2 in dsum_d[c6])dsum_f[n6][m2]=Object.entries(dsum_d[c6][m2]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}}
+    var dsd_f={};for(var sub1 in dsd_d){dsd_f[sub1]=Object.entries(dsd_d[sub1]).map(function(e){return{n:e[0],v:Math.round(e[1].v*100)/100,o:e[1].o}}).sort(function(a,b){return b.v-a.v});}
+    var dsdu_f={};for(var c7 in dsdu_d){var n7=CODE_TO_NAME[c7];if(n7){dsdu_f[n7]={};for(var sub2 in dsdu_d[c7])dsdu_f[n7][sub2]=Object.entries(dsdu_d[c7][sub2]).map(function(e){return{n:e[0],v:Math.round(e[1].v*100)/100,o:e[1].o}}).sort(function(a,b){return b.v-a.v});}}
+    var dfm_f={};for(var mf in dm)dfm_f[mf]=Math.round((dm[mf]-(dfm_excl[mf]||0))*100)/100;
+
+    // CM = cirurgias monthly counts
+    var cir_monthly={};for(var c8 in ctm_d)for(var m3 in ctm_d[c8])cir_monthly[m3]=(cir_monthly[m3]||0)+ctm_d[c8][m3];
+
+    // Round values
+    function rd(obj){var r={};for(var k in obj)r[k]=Math.round(obj[k]*100)/100;return r;}
+
+    var P={};
+    P.U=toJs({C61:'RS',C63:'SP',C64:'PR',C65:'HOLEP',C66:'TRAUMATO',C67:'SC',C68:'BA',CXP:'XP'});
+    P.MN=toJs({1:'Jan',2:'Fev',3:'Mar',4:'Abr',5:'Mai',6:'Jun',7:'Jul',8:'Ago',9:'Set',10:'Out',11:'Nov',12:'Dez'});
+    P.FM=toJs(rd(fm));P.FU=toJs(c2d(fu));P.FUM=toJs(c2d(fum));
+    P.GR=toJs(c2d(gr));P.GRM=toJs(c2d(grm_d));
+    P.DM=toJs(rd(dm));P.DU=toJs(c2d(du));P.DUM=toJs(c2d(dum));
+    P.DS=toJs(ds_arr);P.DSM=toJs(dsm_f);P.DSU=toJs(dsu_f);P.DSUM=toJs(dsum_f);
+    P.RM=toJs(rd(rm));P.RU=toJs(c2d(ru));P.RUM=toJs(c2d(rum));
+    P.CM=toJs(cir_monthly);P.CU=toJs(c2d(ct));P.CUM=toJs(c2d(ctm_d));
+    P.CT=toJs(c2d(ct));P.CMD=toJs(c2d(cmd_d));
+    P.IU=toJs(c2d(iu));P.IT=toJs(Math.round(it_total*100)/100);
+    P.SB=toJs(sb_final);P.COLOPLAST=toJs(139627);P.INV=toJs(inv_final);
+    P.CMVM=toJs(rd(cmvm_monthly));P.CMVU=toJs(c2d(cu_cmv));P.CMVUM=toJs(c2d(cum_cmv));
+    P.CICLO=toJs(ciclo);P.DFM=toJs(dfm_f);
+    P.DSD=toJs(dsd_f);P.DSDM=toJs({});P.DSDU=toJs(dsdu_f);P.DSDUM=toJs({});
+    P.CTM=toJs(c2d(ctm_d));P.CMDM=toJs(c2d(cmdm_d));
+
+    var today=new Date();
+    P.__HEADER__='Atualizado em '+fmtDate(today)+' (dados até '+fmtDate(LAST_BIZ)+')';
+
+    log('  Variáveis geradas: '+Object.keys(P).length);
+
+    // Show KPIs
+    var kpiHtml='';
+    kpiHtml+='<div class="kpi"><div class="lb">Faturamento</div><div class="vl" style="color:#2ecc71">R$ '+(fatTotal/1e6).toFixed(1)+'M</div></div>';
+    kpiHtml+='<div class="kpi"><div class="lb">Despesas</div><div class="vl" style="color:#e74c3c">R$ '+(despTotal/1e6).toFixed(1)+'M</div></div>';
+    kpiHtml+='<div class="kpi"><div class="lb">Recebimento</div><div class="vl" style="color:#3498db">R$ '+(recTotal/1e6).toFixed(1)+'M</div></div>';
+    kpiHtml+='<div class="kpi"><div class="lb">Cirurgias</div><div class="vl">'+cirTotal+'</div></div>';
+    kpiHtml+='<div class="kpi"><div class="lb">CMV</div><div class="vl" style="color:#9b59b6">R$ '+(cmvTotal/1e6).toFixed(1)+'M</div></div>';
+    document.getElementById('kpis').innerHTML=kpiHtml;
+    document.getElementById('kpis').style.display='flex';
+
+    // ============ APPLY REPLACEMENTS ============
+    log('🔄 Aplicando substituições...');
+    function findValueEnd(c,start){
+      var ch=c.charAt(start),inStr=false,strChar='';
+      if(ch==='{'||ch==='['){
+        var open=ch,close=ch==='{'?'}':']',depth=0;
+        for(var i=start;i<c.length;i++){
+          var x=c.charAt(i);
+          if(inStr){if(x==='\\'){i++;continue;}if(x===strChar)inStr=false;continue;}
+          if(x==='"'||x==="'"){inStr=true;strChar=x;continue;}
+          if(x===open)depth++;if(x===close){depth--;if(depth===0)return i+1;}
+        }
+      }else{
+        for(var i2=start;i2<c.length;i2++){
+          var x2=c.charAt(i2);
+          if(inStr){if(x2==='\\'){i2++;continue;}if(x2===strChar)inStr=false;continue;}
+          if(x2==='"'||x2==="'"){inStr=true;strChar=x2;continue;}
+          if(x2===';')return i2;
+        }
+      }
+      return-1;
+    }
+
+    var changes=[];
+    var varNames=Object.keys(P).filter(function(k){return k!=='__HEADER__';});
+    varNames.forEach(function(varName){
+      var pattern='var '+varName+'=';
+      var idx=content.indexOf(pattern);
+      if(idx===-1){pattern='var '+varName+' = ';idx=content.indexOf(pattern);}
+      if(idx===-1)return;
+      var vs=idx+pattern.length,ve=findValueEnd(content,vs);
+      if(ve===-1)return;
+      changes.push({s:vs,e:ve,v:P[varName]});
+    });
+    changes.sort(function(a,b){return b.s-a.s;});
+    var result=content;
+    changes.forEach(function(ch){result=result.substring(0,ch.s)+ch.v+result.substring(ch.e);});
+
+    // Header
+    var hi=result.indexOf('Atualizado em ');
+    if(hi>=0){var he=result.indexOf(')',hi);if(he>=0)result=result.substring(0,hi)+P.__HEADER__+result.substring(he+1);}
+
+    log('  Substituições: '+changes.length+' de '+varNames.length+' variáveis | Novo tamanho: '+result.length);
+    if(changes.length<30){
+      log('⚠️ AVISO: Menos de 30 variáveis foram encontradas! Esperado ~37.');
+      var missing=varNames.filter(function(vn){
+        var p='var '+vn+'=';return content.indexOf(p)===-1&&content.indexOf('var '+vn+' = ')===-1;
+      });
+      if(missing.length>0)log('  Não encontradas: '+missing.join(', '));
+    }
+
+    // ============ COMMIT ============
+    log('\n🚀 Enviando para GitHub...');
+    var newContent=btoa(unescape(encodeURIComponent(result)));
+    var putResp=await fetch(apiUrl,{
+      method:'PUT',
+      headers:{Authorization:'Bearer '+TOKEN,'Content-Type':'application/json',Accept:'application/vnd.github.v3+json'},
+      body:JSON.stringify({message:'Atualizar dados '+fmtDate(LAST_BIZ),content:newContent,sha:fileSha,branch:BRANCH})
+    });
+    if(!putResp.ok){var err=await putResp.text();throw new Error('Erro no commit: '+putResp.status+' '+err);}
+    var putData=await putResp.json();
+    log('✅ Commit: '+putData.commit.sha.substring(0,12));
+    log('📡 GitHub Pages será atualizado em ~30 segundos');
+
+    document.getElementById('success').style.display='block';
+    btn.textContent='✅ Concluído!';
+  }catch(e){
+    log('\n❌ ERRO: '+e.message);
+    btn.textContent='Erro — Tente novamente';
+    btn.disabled=false;
+  }
+}
+
+// Init
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+var savedToken=localStorage.getItem('gh_pat');
+if(savedToken)document.getElementById('ghToken').value=savedToken;
+checkReady();
+</script>
+</body>
+</html>
