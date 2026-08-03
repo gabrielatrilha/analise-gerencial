@@ -361,7 +361,7 @@ async function processAll(){
 
     // ============ FATURAMENTO ============
     log('\n📊 Processando Faturamento...');
-    var fm={},fu={},fum={},gr_grupos={},grm_grupos={};
+    var fm={},fu={},fum={},gr_grupos={},grm_grupos={},md_medicos={},mdm_medicos={};
     fat_rows.forEach(function(r){
       if(r.length<17)return;
       var dt=parseDate(r[1]);if(!dt||!dateLte(dt,LAST_BIZ))return;
@@ -373,6 +373,8 @@ async function processAll(){
       if(!fum[c])fum[c]={};fum[c][m]=(fum[c][m]||0)+v;
       var grupo=r[6]?String(r[6]).trim():'SEM GRUPO';
       if(grupo){gr_grupos[grupo]=(gr_grupos[grupo]||0)+v;if(!grm_grupos[m])grm_grupos[m]={};grm_grupos[m][grupo]=(grm_grupos[m][grupo]||0)+v;}
+      var medico=r[14]?String(r[14]).trim():'SEM MEDICO';
+      if(medico){md_medicos[medico]=(md_medicos[medico]||0)+v;if(!mdm_medicos[m])mdm_medicos[m]={};mdm_medicos[m][medico]=(mdm_medicos[m][medico]||0)+v;}
     });
     var fatTotal=Object.values(fm).reduce(function(a,b){return a+b},0);
     log('  Total: R$ '+Math.round(fatTotal).toLocaleString('pt-BR'));
@@ -580,6 +582,8 @@ async function processAll(){
     log('\n🔧 Construindo payload...');
     var gr_arr=Object.entries(gr_grupos).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});
     var grm_arr={};for(var gm in grm_grupos){grm_arr[gm]=Object.entries(grm_grupos[gm]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}
+    var md_arr=Object.entries(md_medicos).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v}).slice(0,15);
+    var mdm_arr={};for(var mm in mdm_medicos){mdm_arr[mm]=Object.entries(mdm_medicos[mm]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v}).slice(0,15);}
 
     var ciclo=fatTotal>0?Math.round((it_total/fatTotal)*365):0;
 
@@ -612,6 +616,7 @@ async function processAll(){
     P.MN=toJs({1:'Jan',2:'Fev',3:'Mar',4:'Abr',5:'Mai',6:'Jun',7:'Jul',8:'Ago',9:'Set',10:'Out',11:'Nov',12:'Dez'});
     P.FM=toJs(rd(fm));P.FU=toJs(c2d(fu));P.FUM=toJs(c2d(fum));
     P.GR=toJs(gr_arr);P.GRM=toJs(grm_arr);
+    P.MD=toJs(md_arr);P.MDM=toJs(mdm_arr);
     P.DM=toJs(rd(dm));P.DU=toJs(c2d(du));P.DUM=toJs(c2d(dum));
     P.DS=toJs(ds_arr);P.DSM=toJs(dsm_f);P.DSU=toJs(dsu_f);P.DSUM=toJs(dsum_f);
     P.RM=toJs(rd(rm));P.RU=toJs(c2d(ru));P.RUM=toJs(c2d(rum));
