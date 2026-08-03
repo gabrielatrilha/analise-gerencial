@@ -193,7 +193,7 @@ function makeLine(datasets,labels){
   return h;
 }
 
-function ensureArr(d){if(Array.isArray(d))return d;if(d&&typeof d==="object")return Object.entries(d).map(function(e){return{n:e[0],v:e[1]}}).sort(function(a,b){return b.v-a.v});return []}
+function ensureArr(d){if(Array.isArray(d))return d;if(typeof d==="number")return [{n:"Total",v:d}];if(d&&typeof d==="object")return Object.entries(d).map(function(e){return{n:e[0],v:e[1]}}).sort(function(a,b){return b.v-a.v});return []}
 function render(){var _sp=window.scrollY;
   
   var fv=gv(FM,sM),dv=gv(DM,sM),rv=gv(RM,sM),cv=gv(CM,sM),cmvv=gv(CMVM,sM),dfv=gv(DFM,sM);
@@ -357,7 +357,7 @@ h+='</details></div>';
     c+='<div class="cs">Total em '+s.d+'</div>';
     if(open){
       c+='<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.15);font-size:12px">';
-      c+='<div style="opacity:.7;margin-bottom:4px">Banco: <b>'+s.fd+'</b></div>';
+      if(s.fd)c+='<div style="opacity:.7;margin-bottom:4px">Banco: <b>'+s.fd+'</b></div>';
       c+='<div>CC: <b>'+fF(s.cc)+'</b></div>';
       if(s.inv>0){
         c+='<div style="margin-top:6px">Investimentos: <b>'+fF(s.inv)+'</b></div>';
