@@ -361,7 +361,7 @@ h+='</details></div>';
       c+='<div>CC: <b>'+fF(s.cc)+'</b></div>';
       if(s.inv>0){
         c+='<div style="margin-top:6px">Investimentos: <b>'+fF(s.inv)+'</b></div>';
-        if(INV[u]){
+        if(INV[u]&&Array.isArray(INV[u])){
           var tr=0;INV[u].forEach(function(i){tr+=i.r});
           c+='<div style="opacity:.7;margin-top:2px">Rendimento total: <b style="color:#22c55e">'+fF(tr)+'</b></div>';
           c+='<table style="margin-top:6px;font-size:11px"><tr><th style="padding:4px 6px">Ativo</th><th class="r" style="padding:4px 6px">Principal</th><th class="r" style="padding:4px 6px">Rend.</th><th class="r" style="padding:4px 6px">Líquido</th></tr>';
