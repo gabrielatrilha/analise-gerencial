@@ -443,12 +443,15 @@ async function processAll(){
 
     // ============ INADIMPLENCIA ============
     log('⚠️ Processando Inadimplência...');
-    var iu={},it_total=0;
+    var iu={},it_total=0,id_d={};
     inad_rows.forEach(function(r){
       if(r.length<12)return;
       var c=getCode(r[6]);if(!c)return;
       var v=sf(r[11]);
+      var nome=r[2]?String(r[2]).trim():'SEM NOME';
       iu[c]=(iu[c]||0)+v;it_total+=v;
+      if(!id_d[c])id_d[c]={};
+      id_d[c][nome]=(id_d[c][nome]||0)+v;
     });
     log('  Total: R$ '+Math.round(it_total).toLocaleString('pt-BR'));
 
@@ -620,6 +623,8 @@ async function processAll(){
     P.CM=toJs(cir_monthly);P.CU=toJs(c2d(ct));P.CUM=toJs(c2d(ctm_d));
     P.CT=toJs(c2d(ct));P.CMD=toJs(c2d(cmd_d));
     P.IU=toJs(c2d(iu));P.IT=toJs(Math.round(it_total*100)/100);
+    var id_final={};for(var ic in id_d){var idn=CODE_TO_NAME[ic];if(idn){id_final[idn]=Object.entries(id_d[ic]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}}
+    P.ID=toJs(id_final);
     P.SB=toJs(sb_final);P.COLOPLAST=toJs(139627);P.INV=toJs(inv_final);
     P.CMVM=toJs(rd(cmvm_monthly));P.CMVU=toJs(c2d(cu_cmv));P.CMVUM=toJs(c2d(cum_cmv));
     P.CICLO=toJs(ciclo);P.DFM=toJs(dfm_f);
