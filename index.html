@@ -92,7 +92,7 @@ var MN={"1":"Jan","2":"Fev","3":"Mar","4":"Abr","5":"Mai","6":"Jun","7":"Jul","8
 function fmt(v){if(Math.abs(v)>=1e6)return'R$ '+(v/1e6).toFixed(1).replace('.',',')+'M';if(Math.abs(v)>=1e3)return'R$ '+(v/1e3).toFixed(0)+'K';return'R$ '+v.toFixed(0)}
 function fmtK(v){return'R$ '+Math.round(v).toLocaleString('pt-BR')}
 function fN(v){return v==null?0:v.toLocaleString('pt-BR')}
-function fF(v){return'R$ '+(v==null?0:v).toLocaleString('pt-BR',{minimumFractionDigits:0})}
+function fF(v){return'R$ '+(v==null?0:v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
 
 var FM={"1":2161944.03,"2":2109383.8,"3":2311749.43,"4":2600547.05,"5":3087631.28,"6":2337501.09,"7":3281812.88};
 var FU={RS:6720200.1,SC:1019328,PR:1374792,HOLEP:2065000,TRAUMATO:4838812.23,SP:1691769.23,BA:180668};
