@@ -361,10 +361,12 @@ h+='</details></div>';
   var sU=["BA","HOLEP","PR","RS","SC","SP","TRAUMATO","XP"];
   var tCC=0,tI=0;sU.forEach(function(u){tCC+=(SB[u].cc||0);tI+=(SB[u].inv||0)});
   h+='<div style="margin-bottom:12px;font-size:13px">CC: <b>'+fF(tCC)+'</b> &nbsp;|&nbsp; Investimentos: <b>'+fF(tI)+'</b> &nbsp;|&nbsp; Coloplast: <b style="color:#e74c3c">-'+fF(COLOPLAST)+'</b> &nbsp;|&nbsp; Total: <b>'+fF(tCC+tI-COLOPLAST)+'</b></div>';
+  var BANK_INFO={RS:'Itaú · Ag 0280 · CC 99670-3',SP:'Itaú · Ag 8841 · CC 98905-9',PR:'Itaú · Ag 8841 · CC 99141-0',HOLEP:'Itaú · Ag 0280 · CC 99305-6',SC:'Itaú · Ag 0280 · CC 99228-0',BA:'Itaú · Ag 8841 · CC 99487-7',TRAUMATO:'Itaú · Ag 0280 · CC 99688-5',XP:'BB · Ag 8455-1 · CC 181-3'};
   function sbCard(u){
     var s=SB[u],open=sSU===u,tot=s.cc+(s.inv||0);
     var c='<div class="cd'+(open?' a':'')+'" onclick="toggleSU(\''+u+'\')" style="'+(open?'padding-bottom:14px':'')+'">';
     c+='<div class="cn">'+(U[u]||u)+'</div>';
+    if(BANK_INFO[u]) c+='<div style="opacity:.4;font-size:9px;margin-top:1px">'+BANK_INFO[u]+'</div>';
     c+='<div class="cv">'+fmt(tot)+'</div>';
     c+='<div class="cs">Total em '+s.d+'</div>';
     if(open){
