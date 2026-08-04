@@ -214,7 +214,7 @@ function render(){var _sp=window.scrollY;
 
   h+='<div class="tabs">';
   h+='<div class="tb'+(sM===0?' a':'')+'" onclick="setSM(0)">Acumulado</div>';
-  for(var i=1;i<=7;i++)h+='<div class="tb'+(sM===i?' a':'')+'" onclick="setSM('+i+')">'+MN[i]+'</div>';
+  for(var i=1;i<=Object.keys(FM).length;i++)h+='<div class="tb'+(sM===i?' a':'')+'" onclick="setSM('+i+')">'+MN[i]+'</div>';
   h+='</div>';
 
   h+='<div class="kpis">';
