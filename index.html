@@ -367,10 +367,10 @@ h+='</details></div>';
 
   // SALDO
   h+='<div class="sec"><div class="st">Saldo Bancário</div>';
-  var sU=["BA","HOLEP","PR","RS","SC","SP","TRAUMATO","XP"];
+  var sU=["BA","BRAZA","HOLEP","PR","RS","SC","SP","TRAUMATO","XP"];
   var tCC=0,tI=0;sU.forEach(function(u){tCC+=(SB[u].cc||0);tI+=(SB[u].inv||0)});
   h+='<div style="margin-bottom:12px;font-size:13px">CC: <b>'+fF(tCC)+'</b> &nbsp;|&nbsp; Investimentos: <b>'+fF(tI)+'</b> &nbsp;|&nbsp; Coloplast: <b style="color:#e74c3c">-'+fF(COLOPLAST)+'</b> &nbsp;|&nbsp; Total: <b>'+fF(tCC+tI-COLOPLAST)+'</b></div>';
-  var BANK_INFO={RS:'Itaú · Ag 0280 · CC 99670-3',SP:'BB · CC 169188 | Itaú · CC 989059',PR:'Itaú · Ag 8841 · CC 99141-0',HOLEP:'Itaú · Ag 0280 · CC 99305-6',SC:'Itaú · Ag 0280 · CC 99228-0',BA:'Itaú · Ag 8841 · CC 99487-7',TRAUMATO:'Itaú · Ag 0280 · CC 99688-5',XP:'BB · Ag 8455-1 · CC 181-3',BRAZA:'Braza Bank'};
+  var BANK_INFO={RS:'Itaú · Ag 0280 · CC 99670-3',SP:'BB · CC 169188 | Itaú · CC 989059',PR:'Itaú · Ag 8841 · CC 99141-0',HOLEP:'Itaú · Ag 0280 · CC 99305-6',SC:'Itaú · Ag 0280 · CC 99228-0',BA:'Itaú · Ag 8841 · CC 99487-7',TRAUMATO:'Itaú · Ag 0280 · CC 99688-5',XP:'XP · CC 9313357',BRAZA:'Braza Bank'};
   function sbCard(u){
     var s=SB[u],open=sSU===u,tot=s.cc+(s.inv||0);
     var c='<div class="cd'+(open?' a':'')+'" onclick="toggleSU(\''+u+'\')" style="'+(open?'padding-bottom:14px':'')+'">';
