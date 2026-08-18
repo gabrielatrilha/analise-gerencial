@@ -98,7 +98,7 @@ input[type=file]{display:none}
 var REPO_OWNER='gabrielatrilha',REPO_NAME='analise-gerencial',FILE_PATH='index.html',BRANCH='main';
 var CODE_TO_NAME={C61:'RS',C63:'SP',C64:'PR',C65:'HOLEP',C66:'TRAUMATO',C67:'SC',C68:'BA',CXP:'XP'};
 var VALID_CODES=new Set(Object.keys(CODE_TO_NAME));
-var FUND_MAP={ITA996703:'C61',ITA996885:'C66',ITA993056:'C65',ITA99228:'C67',BB_169188:'C63',ITA994877:'C68',SAN130071322:'C64'};
+var FUND_MAP={ITA996703:'C61',ITA996885:'C66',ITA993056:'C65',ITA99228:'C67',BB_169188:'C63',ITA989059:'C63',ITA994877:'C68',SAN130071322:'C64'};
 var CMV_RATIOS={C61:0.398,C63:0.431,C64:0.373,C65:0.068,C66:0.122,C67:0.363,C68:0.531};
 var CIR_EXCLUDE=new Set(['AGULHA BONEE','AGULHA-BONEE','SPEED-TERCEIROS','SONDAS','SPEEDICATH']);
 var REC_NAME_EXCLUDE=new Set(['MAGNUM IMPORT','MAGNUM IMPORT MEDICAL','ITAU','BANCO BRASIL','BANCO DO BRASIL SA']);
@@ -507,9 +507,11 @@ async function processAll(){
       var c=null;
       for(var fk in FUND_MAP){if(fund.indexOf(fk)>=0){c=FUND_MAP[fk];break;}}
       if(!c)return;
+      var sbKey=c;
+      if(c==='C63'){sbKey=fund.indexOf('BB')>=0?'SP BB':'SP ITAU';}
       var dt=parseDate(r[1]),v=sf(r[2]);
-      if(!sb_raw[c]||(dt&&(!sb_raw[c].dt||dt>=sb_raw[c].dt))){
-        sb_raw[c]={cc:v,dt:dt};
+      if(!sb_raw[sbKey]||(dt&&(!sb_raw[sbKey].dt||dt>=sb_raw[sbKey].dt))){
+        sb_raw[sbKey]={cc:v,dt:dt};
       }
     });
 
@@ -589,12 +591,12 @@ async function processAll(){
 
     var sb_final={};
     for(var c3 in sb_raw){
-      var n=CODE_TO_NAME[c3];if(!n)continue;
+      var n=CODE_TO_NAME[c3]||c3;
       var inv_v=inv_raw[c3]||0;
       var dt_s=sb_raw[c3].dt?fmtDate(sb_raw[c3].dt).slice(0,5):'29/07';
       sb_final[n]={cc:Math.round(sb_raw[c3].cc*100)/100,inv:Math.round(inv_v),d:dt_s};
     }
-    sb_final['XP']={cc:0,inv:0,d:fmtDate(LAST_BIZ).slice(0,5)};
+    var xpInv=inv_raw['CXP']||0;sb_final['XP']={cc:0,inv:Math.round(xpInv),d:fmtDate(LAST_BIZ).slice(0,5)};
 
     var inv_final={};
     for(var c4 in inv_raw)if(CODE_TO_NAME[c4])inv_final[CODE_TO_NAME[c4]]=inv_raw[c4];
@@ -627,7 +629,7 @@ async function processAll(){
     P.IU=toJs(c2d(iu));P.IT=toJs(Math.round(it_total*100)/100);
     var id_final={};for(var ic in id_d){var idn=CODE_TO_NAME[ic];if(idn){id_final[idn]=Object.entries(id_d[ic]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}}
     P.ID=toJs(id_final);
-    P.SB=toJs(sb_final);P.COLOPLAST=toJs(139627);P.INV=toJs(inv_final);
+    P.SB=toJs(sb_final);P.COLOPLAST=toJs(198602);P.INV=toJs(inv_final);
     P.CMVM=toJs(rd(cmvm_monthly));P.CMVU=toJs(c2d(cu_cmv));P.CMVUM=toJs(c2d(cum_cmv));
     P.CICLO=toJs(ciclo);P.DFM=toJs(dfm_f);
     P.DSD=toJs(dsd_f);P.DSDM=toJs({});P.DSDU=toJs(dsdu_f);P.DSDUM=toJs({});
