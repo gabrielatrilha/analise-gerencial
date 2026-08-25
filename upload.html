@@ -382,7 +382,7 @@ async function processAll(){
     // ============ DESPESAS ============
     log('💸 Processando Despesas...');
     var dm={},du={},dum={};
-    var ds_d={},dsm_d={},dsu_d={},dsum_d={},dsd_d={},dsdu_d={};
+    var ds_d={},dsm_d={},dsu_d={},dsum_d={},dsd_d={},dsdu_d={},dsdm_d={},dsdum_d={};
     var dfm_excl={};
     desp_rows.forEach(function(r){
       if(r.length<14)return;
@@ -405,6 +405,8 @@ async function processAll(){
       if(!dsdu_d[c])dsdu_d[c]={};if(!dsdu_d[c][sub])dsdu_d[c][sub]={};
       if(!dsdu_d[c][sub][nome])dsdu_d[c][sub][nome]={v:0,o:adic};
       dsdu_d[c][sub][nome].v+=v;
+      if(!dsdm_d[m])dsdm_d[m]={};if(!dsdm_d[m][sub])dsdm_d[m][sub]={};if(!dsdm_d[m][sub][nome])dsdm_d[m][sub][nome]={v:0,o:adic};dsdm_d[m][sub][nome].v+=v;
+      if(!dsdum_d[c])dsdum_d[c]={};if(!dsdum_d[c][m])dsdum_d[c][m]={};if(!dsdum_d[c][m][sub])dsdum_d[c][m][sub]={};if(!dsdum_d[c][m][sub][nome])dsdum_d[c][m][sub][nome]={v:0,o:adic};dsdum_d[c][m][sub][nome].v+=v;
       if(DFM_EXCLUDE.has(adic))dfm_excl[m]=(dfm_excl[m]||0)+v;
     });
     var despTotal=Object.values(dm).reduce(function(a,b){return a+b},0);
@@ -607,6 +609,8 @@ async function processAll(){
     var dsum_f={};for(var c6 in dsum_d){var n6=CODE_TO_NAME[c6];if(n6){dsum_f[n6]={};for(var m2 in dsum_d[c6])dsum_f[n6][m2]=Object.entries(dsum_d[c6][m2]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}}
     var dsd_f={};for(var sub1 in dsd_d){dsd_f[sub1]=Object.entries(dsd_d[sub1]).map(function(e){return{n:e[0],v:Math.round(e[1].v*100)/100,o:e[1].o}}).sort(function(a,b){return b.v-a.v});}
     var dsdu_f={};for(var c7 in dsdu_d){var n7=CODE_TO_NAME[c7];if(n7){dsdu_f[n7]={};for(var sub2 in dsdu_d[c7])dsdu_f[n7][sub2]=Object.entries(dsdu_d[c7][sub2]).map(function(e){return{n:e[0],v:Math.round(e[1].v*100)/100,o:e[1].o}}).sort(function(a,b){return b.v-a.v});}}
+    var dsdm_f={};for(var dm1 in dsdm_d){dsdm_f[dm1]={};for(var sub3 in dsdm_d[dm1])dsdm_f[dm1][sub3]=Object.entries(dsdm_d[dm1][sub3]).map(function(e){return{n:e[0],v:Math.round(e[1].v*100)/100,o:e[1].o}}).sort(function(a,b){return b.v-a.v});}
+    var dsdum_f={};for(var c9 in dsdum_d){var n9=CODE_TO_NAME[c9];if(n9){dsdum_f[n9]={};for(var dm2 in dsdum_d[c9]){dsdum_f[n9][dm2]={};for(var sub4 in dsdum_d[c9][dm2])dsdum_f[n9][dm2][sub4]=Object.entries(dsdum_d[c9][dm2][sub4]).map(function(e){return{n:e[0],v:Math.round(e[1].v*100)/100,o:e[1].o}}).sort(function(a,b){return b.v-a.v});}}}
     var dfm_f={};for(var mf in dm)dfm_f[mf]=Math.round((dm[mf]-(dfm_excl[mf]||0))*100)/100;
 
     var cir_monthly={};for(var c8 in ctm_d)for(var m3 in ctm_d[c8])cir_monthly[m3]=(cir_monthly[m3]||0)+ctm_d[c8][m3];
@@ -632,7 +636,7 @@ async function processAll(){
     P.SB=toJs(sb_final);P.COLOPLAST=toJs(198602);P.INV=toJs(inv_final);
     P.CMVM=toJs(rd(cmvm_monthly));P.CMVU=toJs(c2d(cu_cmv));P.CMVUM=toJs(c2d(cum_cmv));
     P.CICLO=toJs(ciclo);P.DFM=toJs(dfm_f);
-    P.DSD=toJs(dsd_f);P.DSDM=toJs({});P.DSDU=toJs(dsdu_f);P.DSDUM=toJs({});
+    P.DSD=toJs(dsd_f);P.DSDM=toJs(dsdm_f);P.DSDU=toJs(dsdu_f);P.DSDUM=toJs(dsdum_f);
     var ctm_final={};for(var ctmc in ctm_tipo_d){var ctmn=CODE_TO_NAME[ctmc];if(ctmn){ctm_final[ctmn]={};for(var ctmm in ctm_tipo_d[ctmc])ctm_final[ctmn][ctmm]=Object.entries(ctm_tipo_d[ctmc][ctmm]).map(function(e){return{n:e[0],v:e[1]}}).sort(function(a,b){return b.v-a.v});}}
     var cmdm_final={};for(var cmdmc in cmdm_d){var cmdmn=CODE_TO_NAME[cmdmc];if(cmdmn){cmdm_final[cmdmn]={};for(var cmdmm in cmdm_d[cmdmc])cmdm_final[cmdmn][cmdmm]=Object.entries(cmdm_d[cmdmc][cmdmm]).map(function(e){return{n:e[0],v:e[1]}}).sort(function(a,b){return b.v-a.v}).slice(0,20);}}
     P.CTM=toJs(ctm_final);P.CMDM=toJs(cmdm_final);
