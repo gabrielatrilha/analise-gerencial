@@ -566,8 +566,8 @@ async function processAll(){
     log('  Arquivo: '+content.length+' chars | SHA: '+fileSha.substring(0,12));
 
     // If no PDF, extract old INV from current file
-    if(!files.inv){
-      log('  Extraindo INV anteriores...');
+    {
+      log('  Extraindo INV anteriores (preservando chaves ausentes)...');
       try{
         var invMatch=content.match(/var INV=(\{[^;]*\})/);
         if(invMatch){
@@ -575,7 +575,7 @@ async function processAll(){
           for(var ik in oldInv){
             var codeForName=null;
             for(var cc in CODE_TO_NAME)if(CODE_TO_NAME[cc]===ik){codeForName=cc;break;}
-            if(codeForName)inv_raw[codeForName]=oldInv[ik];
+            if(codeForName&&!inv_raw[codeForName])inv_raw[codeForName]=oldInv[ik];
           }
           log('  INV preservado: '+Object.keys(oldInv).join(', '));
         }
