@@ -469,7 +469,7 @@ h+='</details></div>';
 }
 
 window.setSM=function(v){sM=v;render()};
-window.toggleEmp=function(u){var i=selEmps.indexOf(u);if(i>=0){if(selEmps.length>1)selEmps.splice(i,1)}else selEmps.push(u);render()};
+window.toggleEmp=function(u){if(selEmps.length===ALL_EMPS.length){selEmps=[u]}else{var i=selEmps.indexOf(u);if(i>=0){if(selEmps.length>1)selEmps.splice(i,1)}else{selEmps.push(u)}}render()};
 window.setAllEmps=function(){selEmps=ALL_EMPS.slice();render()};
 window.setDtFrom=function(v){dtFrom=parseInt(v);render()};
 window.setDtTo=function(v){dtTo=parseInt(v);render()};
