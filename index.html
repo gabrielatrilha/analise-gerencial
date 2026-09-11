@@ -259,6 +259,23 @@ var ml=sM===0?'Acumulado '+MN[_df]+'-'+MN[_dt]+' 2026':MN[sM]+'/2026';
   for(var i=1;i<=Object.keys(FM).length;i++)h+='<div class="tb'+(sM===i?' a':'')+'" onclick="setSM('+i+')">'+MN[i]+'</div>';
   h+='</div>';
 
+  // Filter bar
+  var _mxM=Math.max.apply(null,Object.keys(FM).map(Number));
+  var isAllEmps=selEmps.length===ALL_EMPS.length;
+  h+='<div class="flt">';
+  h+='<span class="fl">Empresa:</span><div class="emp-btns">';
+  ALL_EMPS.forEach(function(e){h+='<div class="eb'+(selEmps.indexOf(e)>=0?' a':'')+' " onclick="toggleEmp(\''+e+'\')">' +e+'</div>'});
+  h+='</div>';
+  if(!isAllEmps)h+='<div class="reset-btn" onclick="setAllEmps()">Todas</div>';
+  h+='<span class="fl" style="margin-left:12px">Per\u00edodo:</span>';
+  h+='<select onchange="setDtFrom(this.value)">';
+  for(var pi=1;pi<=_mxM;pi++)h+='<option value="'+pi+'"'+(dtFrom===pi?' selected':'')+'>'+MN[pi]+'</option>';
+  h+='</select><span class="sep">a</span><select onchange="setDtTo(this.value)">';
+  for(var pi=1;pi<=_mxM;pi++)h+='<option value="'+pi+'"'+((dtTo===pi||(dtTo===0&&pi===_mxM))?' selected':'')+'>'+MN[pi]+'</option>';
+  h+='</select>';
+  if(dtFrom>0||dtTo>0)h+='<div class="reset-btn" onclick="setDtFrom(0);setDtTo(0)">Limpar</div>';
+  h+='</div>';
+
   h+='<div class="kpis">';
   h+='<div class="kp k1"><div class="lb">Faturamento</div><div class="vl">'+fmtK(fv)+'</div><div class="sb">'+ml+'</div></div>';
   h+='<div class="kp k2"><div class="lb">Despesas</div><div class="vl">'+fmtK(dv)+'</div><div class="sb">'+ml+'</div></div>';
