@@ -216,6 +216,23 @@ function log(msg){
   el.scrollTop=el.scrollHeight;
 }
 
+function ghFetch(url,opts){
+  return new Promise(function(resolve,reject){
+    var xhr=new XMLHttpRequest();
+    xhr.open(opts&&opts.method||'GET',url);
+    var h=opts&&opts.headers||{};for(var k in h)xhr.setRequestHeader(k,h[k]);
+    xhr.onload=function(){
+      resolve({ok:xhr.status>=200&&xhr.status<300,status:xhr.status,statusText:xhr.statusText,
+        json:function(){return Promise.resolve(JSON.parse(xhr.responseText))},
+        text:function(){return Promise.resolve(xhr.responseText)},
+        headers:{get:function(n){return xhr.getResponseHeader(n)}}
+      });
+    };
+    xhr.onerror=function(){reject(new Error('Erro de rede'))};
+    xhr.send(opts&&opts.body||null);
+  });
+}
+
 // ============ HELPERS ============
 function parseDate(val){
   if(!val)return null;
@@ -557,7 +574,7 @@ async function processAll(){
     // ============ FETCH CURRENT FILE ============
     log('\n📥 Buscando arquivo atual do GitHub...');
     var apiUrl='https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH;
-    var fileResp=await fetch(apiUrl,{headers:{Authorization:'Bearer '+TOKEN,Accept:'application/vnd.github.v3+json'}});
+    var fileResp=await ghFetch(apiUrl,{headers:{Authorization:'Bearer '+TOKEN,Accept:'application/vnd.github.v3+json'}});
     if(!fileResp.ok)throw new Error('Erro ao buscar arquivo: '+fileResp.status);
     var fileData=await fileResp.json();
     var fileSha=fileData.sha;
@@ -710,7 +727,7 @@ async function processAll(){
     // ============ COMMIT ============
     log('\n🚀 Enviando para GitHub...');
     var newContent=btoa(unescape(encodeURIComponent(result)));
-    var putResp=await fetch(apiUrl,{
+    var putResp=await ghFetch(apiUrl,{
       method:'PUT',
       headers:{Authorization:'Bearer '+TOKEN,'Content-Type':'application/json',Accept:'application/vnd.github.v3+json'},
       body:JSON.stringify({message:'Atualizar dados '+fmtDate(LAST_BIZ),content:newContent,sha:fileSha,branch:BRANCH})
