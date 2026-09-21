@@ -539,7 +539,7 @@ async function processAll(){
     if(files.inv){
       log('📄 Processando Investimentos PDF...');
       var pages=await readPdf(files.inv);
-      var acct_map={99305:'C65',99688:'C66',99228:'C67',99141:'C64',99670:'C61'};
+      var acct_map={99305:'C65',99688:'C66',99228:'C67',99141:'C64',99670:'C61',98905:'C63'};
       var events=[];
       pages.forEach(function(text,pi){
         var lines=text.split('\n');
