@@ -139,7 +139,7 @@ var IT=633817.22;
 var ID={TRAUMATO:[{n:"SOCIEDADE SULINA DIVINA PROVIDENCIA- HOSPITAL DIVINA",v:386798.22},{n:"HOSPITAL REGINA",v:64500},{n:"HOSPITAL MAE DE DEUS",v:31650},{n:"BLANC POA",v:24900},{n:"SUL AMÉRICA COMPANHIA DE SEGURO SAÚDE",v:14900}],SC:[{n:"UNIMED GRANDE FLORIANOPOLIS",v:17830},{n:"SELECT",v:10000},{n:"VALDEMAR ALVES DE CARVALHO",v:3120}],HOLEP:[{n:"NILSON CARLOS TORTELLI",v:7500},{n:"MOACIR MARCON",v:6000}],RS:[{n:"HOSPITAL REGINA",v:3610},{n:"DOCTOR CLIN",v:3410}],SP:[{n:"HOSPITAL DO CORACAO",v:17600},{n:"HOSPITAL JAPONES SANTA CRUZ",v:12876},{n:"AMIL MORUMBI SP",v:9500},{n:"BP PAULISTA",v:7073},{n:"BP MIRANTE",v:6300},{n:"CARLOS HUGO GUILLAUX",v:2250},{n:"CLINICA UOMO",v:1500}],PR:[{n:"PAULATTI FREDERICO",v:2500}]};
 
 var SB={"SP BB":{cc:2690.42,inv:0,d:"09/09"},"SP ITAU":{cc:111590.74,inv:0,d:"30/09"},SC:{cc:57482,inv:333600,d:"06/10"},HOLEP:{cc:58140.34,inv:1252908,d:"30/09"},BA:{cc:12496.39,inv:0,d:"06/10"},RS:{cc:58885.88,inv:63642,d:"13/09"},TRAUMATO:{cc:595236.36,inv:1488373,d:"30/09"},PR:{cc:0,inv:355558,d:"30/09"},XP:{cc:0,inv:463648,d:"07/10"}};
-var COLOPLAST=198602;
+var COLOPLAST=51624.89;
 var INV={TRAUMATO:1488373,HOLEP:1252908,SP:372704,PR:355558,SC:333600,RS:63642,XP:463648};
 
 var CMVM={"1":599793.78,"2":532833.14,"3":659852.98,"4":805548.34,"5":930527.33,"6":690959.33,"7":891355.36,"8":783402.97,"9":761326.58,"10":122966.04};
@@ -430,7 +430,7 @@ h+='</details></div>';
   var sU=["BA","HOLEP","PR","RS","SC","SP BB","SP ITAU","TRAUMATO","XP"].filter(function(u){return !!SB[u]});
   var tCC=0,tI=0;sU.forEach(function(u){tCC+=(SB[u].cc||0);tI+=(SB[u].inv||0)});
   h+='<div style="margin-bottom:12px;font-size:13px">CC: <b>'+fF(tCC)+'</b> &nbsp;|&nbsp; Investimentos: <b>'+fF(tI)+'</b> &nbsp;|&nbsp; Coloplast: <b style="color:#e74c3c">-'+fF(COLOPLAST)+'</b> &nbsp;|&nbsp; Total: <b>'+fF(tCC+tI-COLOPLAST)+'</b></div>';
-  var BANK_INFO={RS:'Itaú Â· Ag 0280 Â· CC 99670-3','SP BB':'BB Â· CC 169188','SP ITAU':'Itaú Â· CC 989059',PR:'Itaú Â· Ag 8841 Â· CC 99141-0',HOLEP:'Itaú Â· Ag 0280 Â· CC 99305-6',SC:'Itaú Â· Ag 0280 Â· CC 99228-0',BA:'Itaú Â· Ag 8841 Â· CC 99487-7',TRAUMATO:'Itaú Â· Ag 0280 Â· CC 99688-5',XP:'XP Â· CC 9313357'};
+  var BANK_INFO={RS:'Itaú · Ag 0280 · CC 99670-3','SP BB':'BB · CC 169188','SP ITAU':'Itaú · CC 989059',PR:'Itaú · Ag 8841 · CC 99141-0',HOLEP:'Itaú · Ag 0280 · CC 99305-6',SC:'Itaú · Ag 0280 · CC 99228-0',BA:'Itaú · Ag 8841 · CC 99487-7',TRAUMATO:'Itaú · Ag 0280 · CC 99688-5',XP:'XP · CC 9313357'};
   function sbCard(u){
     if(!SB[u])return '';
     var s=SB[u],open=sSU===u,tot=s.cc+(s.inv||0);
