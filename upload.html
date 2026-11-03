@@ -582,6 +582,13 @@ async function processAll(){
     var content=decodeURIComponent(escape(atob(b64)));
     log('  Arquivo: '+content.length+' chars | SHA: '+fileSha.substring(0,12));
 
+    // Preservar valores manuais (COLOPLAST e XP) do dashboard atual
+    var savedColoplast=198602;
+    try{var colM=content.match(/var COLOPLAST=([^;]+)/);if(colM)savedColoplast=parseFloat(colM[1]);}catch(e){}
+    var savedXP={cc:0,inv:0,d:'29/10'};
+    try{var xpM=content.match(/XP:\{cc:(\d+),inv:(\d+),d:"([^"]+)"\}/);if(xpM)savedXP={cc:parseInt(xpM[1]),inv:parseInt(xpM[2]),d:xpM[3]};}catch(e){}
+    log('  Preservando: COLOPLAST='+savedColoplast+', XP inv='+savedXP.inv);
+
     // If no PDF, extract old INV from current file
     {
       log('  Extraindo INV anteriores (preservando chaves ausentes)...');
@@ -615,7 +622,7 @@ async function processAll(){
       var dt_s=sb_raw[c3].dt?fmtDate(sb_raw[c3].dt).slice(0,5):'29/07';
       sb_final[n]={cc:Math.round(sb_raw[c3].cc*100)/100,inv:Math.round(inv_v),d:dt_s};
     }
-    var xpInv=inv_raw['CXP']||0;sb_final['XP']={cc:0,inv:Math.round(xpInv),d:fmtDate(LAST_BIZ).slice(0,5)};
+    sb_final['XP']=savedXP;
 
     var inv_final={};
     for(var c4 in inv_raw)if(CODE_TO_NAME[c4])inv_final[CODE_TO_NAME[c4]]=inv_raw[c4];
@@ -650,7 +657,7 @@ async function processAll(){
     P.IU=toJs(c2d(iu));P.IT=toJs(Math.round(it_total*100)/100);
     var id_final={};for(var ic in id_d){var idn=CODE_TO_NAME[ic];if(idn){id_final[idn]=Object.entries(id_d[ic]).map(function(e){return{n:e[0],v:Math.round(e[1]*100)/100}}).sort(function(a,b){return b.v-a.v});}}
     P.ID=toJs(id_final);
-    P.SB=toJs(sb_final);P.COLOPLAST=toJs(198602);P.INV=toJs(inv_final);
+    P.SB=toJs(sb_final);P.COLOPLAST=toJs(savedColoplast);P.INV=toJs(inv_final);
     P.CMVM=toJs(rd(cmvm_monthly));P.CMVU=toJs(c2d(cu_cmv));P.CMVUM=toJs(c2d(cum_cmv));
     P.CICLO=toJs(ciclo);P.DFM=toJs(dfm_f);
     P.DSD=toJs(dsd_f);P.DSDM=toJs(dsdm_f);P.DSDU=toJs(dsdu_f);P.DSDUM=toJs(dsdum_f);
